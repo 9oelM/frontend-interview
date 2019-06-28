@@ -185,16 +185,50 @@ More useful info
 - https://security.stackexchange.com/questions/5126/whats-the-difference-between-ssl-tls-and-https
 
 ## How could SSL/TLS not be safe
+**IMPORTANT**: as of [**February 2019, TLS v1.3 (state-of-art protocol) is no longer safe.**](https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/) More easily said: NOTHING IS SAFE. 
+
+- All SSL versions: vulnerable
+- TLS 1.0: vulnerable
+- TLS 1.1: vulnerable
+- TLS 1.2: vulnerable
+- TLS 1.3: now vulnerable.
+
+Some known vulnerabilities: [POODLE](https://en.wikipedia.org/wiki/POODLE), [BEAST](https://en.wikipedia.org/wiki/Transport_Layer_Security#BEAST_attack), [CRIME](https://en.wikipedia.org/wiki/CRIME), [BREACH](https://en.wikipedia.org/wiki/BREACH), [Heartbleed](http://heartbleed.com/)
 
 More useful info
 - https://kb.iweb.com/hc/en-us/articles/230268628-SSL-TLS-issues-POODLE-BEAST-SWEET32-attacks-and-the-End-of-SSLv3-OpenSSL-Security-Advisory
 - https://www.acunetix.com/blog/articles/tls-ssl-cipher-hardening/
+- https://www.zdnet.com/article/new-tls-encryption-busting-attack-also-impacts-the-newer-tls-1-3/
+- https://kinsta.com/blog/tls-1-3/
+- https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/
+- https://securityboulevard.com/2019/02/security-researchers-discloses-vulnerabilities-in-tls-libraries-and-the-downgrade-attack-on-tls-1-3/
 
-## How does compression work
+## How does compression work? What's lossy and loseless compression?
+### Compression
+
+
+### Loseless compression
+- Exploits statistical redundancy to represent data **without losing any information**
+- For **example**, an image with same red pixels: "red pixel, red pixel, ..." -> "279 red pixels"
+
+### Lossy compression
+- Drops unimportant details to save storage
+- **Examples**: JPEG, DVD, Blu-ray
+
+More useful info
+- https://stackoverflow.com/questions/16469410/data-compression-algorithms
+- https://superuser.com/questions/132303/how-does-file-compression-work
+
+
+## Wifi: WEP, WPA, WPA2, WPA3
+
+
+More useful info
+- https://en.wikipedia.org/wiki/Wi-Fi_Protected_Access
+
 ## Virtual memory
 ## Cache
 ## HDD, SSD, DRAM
-## Wifi
 ## Pros & cons of NoSQL
 ## Node.js
 ## CDN
