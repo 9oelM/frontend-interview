@@ -1,19 +1,4 @@
-## 1. PNG vs JPG vs Bitmap vs GIF
-
-|                                                                                             | PNG                                   | JPG(=JPEG)                                                 | BMP                     | GIF                                                                   |
-| ------------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------- |
-| Name                                                                                        | Portable Networks Graphic             | Joint Photographic Experts Group                           | Bitmap                  | Graphics Interchange Format                                           |
-| Compression ratio (file size)                                                               | 10-30%                                | 10:1 ~ 100:1                                               | 1:1 (large)             | 4:1 ~ 10:1                                                            |
-| Loseless (compressed but no loss in quality) vs Lossy (more compressed and loss in quality) | Loseless                              | Lossy                                                      | Loseless                | Loseless                                                              |
-| Support transparency (alpha)                                                                | O                                     | X                                                          | O                       | O (partially)                                                         |
-| Color depths in bits (indexed vs direct palette)                                            | 48  (= 281,474,976,710,656 colors)    | 24 (= 16,777,216 colors)                                   | 24 / indexed AND direct | 8 (= 256 colors) / indexed                                            |
-| Animation                                                                                   | X                                     | X                                                          | X                       | O                                                                     |
-| Used for                                                                                    | Recommended for static graphics/icons | Photographs (small size, fairly good quality, many colors) | Almost nothing          | Logos, line drawings, and other simple images that need to be small.  |
-
-More useful info
-- http://ist.uwaterloo.ca/~anderson/images/GIFvsJPEG/compression_rates.html
-- https://superuser.com/questions/53600/jpeg-vs-png-vs-bmp-vs-gif-vs-svg
-- https://www.techsmith.com/blog/jpg-vs-png/
+# Network
 
 ## OSI
 The OSI (Open Systems Interconnection) Model is:
@@ -39,10 +24,12 @@ The OSI (Open Systems Interconnection) Model is:
 - **translate data from a format** used by the application layer into a common format at the sending station, then **translate the common format** to a format known to the application layer at the receiving station
 - **Examples**: format conversions and encryption / decryption
     - image formats: **PNG, GIF, JPEG**... 
+      
         > **The focus of this layer is having a common ground to present data between applications.** Billions of image files are transferred every day. Each of these files contains an image that ultimately will be displayed or stored on a computer. However, each image file must be the proper specified file format. This way, the application that reads the image file understands the type of data and the format contained in it. 
     - text formats: ASCII, UNICODE...
     - audio formats: WAV, MP3, AIFF...
     - even HTML, Javascript, ... 
+      
         > file formats are **'translated'**(or interpreted, by a web browser) to display images and text, and play audio.
     - password encrpytion on data
     - more broadly said: HTTP(S)
@@ -64,6 +51,7 @@ The OSI (Open Systems Interconnection) Model is:
 - moves packets from source to destination
 - routers work on this level -> IP address is also at this level
 - **Example**: 
+  
     > When you message your friend, **this layer assigns source and destination IP addresses to the data segments.** Your IP address is the source, and your friend’s is the destination. It finds **the best path** for delivery too.
 
 #### 2. Data link layer
@@ -203,6 +191,32 @@ More useful info
 - https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/
 - https://securityboulevard.com/2019/02/security-researchers-discloses-vulnerabilities-in-tls-libraries-and-the-downgrade-attack-on-tls-1-3/
 
+## Wifi: WEP, WPA, WPA2, WPA3
+
+More useful info
+
+- https://en.wikipedia.org/wiki/Wi-Fi_Protected_Access
+
+# Computer organization
+
+## PNG vs JPG vs Bitmap vs GIF
+
+|                                                              | PNG                                   | JPG(=JPEG)                                                 | BMP                     | GIF                                                          |
+| ------------------------------------------------------------ | ------------------------------------- | ---------------------------------------------------------- | ----------------------- | ------------------------------------------------------------ |
+| Name                                                         | Portable Networks Graphic             | Joint Photographic Experts Group                           | Bitmap                  | Graphics Interchange Format                                  |
+| Compression ratio (file size)                                | 10-30%                                | 10:1 ~ 100:1                                               | 1:1 (large)             | 4:1 ~ 10:1                                                   |
+| Loseless (compressed but no loss in quality) vs Lossy (more compressed and loss in quality) | Loseless                              | Lossy                                                      | Loseless                | Loseless                                                     |
+| Support transparency (alpha)                                 | O                                     | X                                                          | O                       | O (partially)                                                |
+| Color depths in bits (indexed vs direct palette)             | 48  (= 281,474,976,710,656 colors)    | 24 (= 16,777,216 colors)                                   | 24 / indexed AND direct | 8 (= 256 colors) / indexed                                   |
+| Animation                                                    | X                                     | X                                                          | X                       | O                                                            |
+| Used for                                                     | Recommended for static graphics/icons | Photographs (small size, fairly good quality, many colors) | Almost nothing          | Logos, line drawings, and other simple images that need to be small. |
+
+More useful info
+
+- http://ist.uwaterloo.ca/~anderson/images/GIFvsJPEG/compression_rates.html
+- https://superuser.com/questions/53600/jpeg-vs-png-vs-bmp-vs-gif-vs-svg
+- https://www.techsmith.com/blog/jpg-vs-png/
+
 ## How does compression work? What's lossy and loseless compression?
 ### Compression
 
@@ -219,18 +233,152 @@ More useful info
 - https://stackoverflow.com/questions/16469410/data-compression-algorithms
 - https://superuser.com/questions/132303/how-does-file-compression-work
 
+## Cache
 
-## Wifi: WEP, WPA, WPA2, WPA3
+### Cache memory 
+
+- is **high-speed static random access memory ([SRAM](https://whatis.techtarget.com/definition/SRAM-static-random-access-memory))** that a CPU can access more quickly than RAM
+- often **located within the CPU or along with the bus** connected with CPU
+- **holds frequently requested data and instructions** immediately available to the CPU when needed.
+- **reduces the average time to access** data from RAM
+
+#### Levels in cache memory
+
+#### 1. L1 (AKA Register)
+
+- Fast, smallest, embedded in CPU.
+- Examples: accumulator, Program counter, address register
+
+#### 2. L2 (External caches)
+
+- Located between the CPU and the DRAM (sometimes within CPU)
+- Larger than L1
+
+#### 3. L3+
+
+- Larger and larger
+- Speed, about double the RAM
+
+### Cache in programming 
+
+`cache` object would store the input `num` as its key to store the output of the function. If there's a corresponding key in `cache`, it would simply return the value matching the key. Otherwise `result` would be calculated, stored in cache, and `return`ed.
+
+```js
+const createCacheFunc = () => {
+	let cache = {}
+	return function cacheFunc(num){
+		if(cache[num]){
+			console.log('from cache')
+			return cache[num]
+        }
+		else{
+			console.log('not from cache')
+			const result = num * 3 / 2 + 9
+			cache[num] = result
+			return result
+        }
+	}
+}
+const func = createCacheFunc()
+console.log(func(2)) 
+// not from cache
+// 12
+console.log(func(2)) 
+// from cache
+// 12
+```
+
+More useful info for **Cache memory**
+
+- https://searchstorage.techtarget.com/definition/cache-memory
+- https://www.webopedia.com/TERM/C/cache.html
+- https://www.bbc.com/bitesize/guides/zmb9mp3/revision/3
+- https://www.geeksforgeeks.org/cache-memory/
+
+More useful info for **Cache in programming**
+
+- https://9oelm.github.io/2019-05-05--Memoization-in-python-using-a-decorator:-getting-a-prime-number/
+
+## HDD, SSD, DRAM
+
+|                                  | SSD(Solid State Drive)                                       | HDD(Hard Disk Drive)                                         |
+| -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Implementation                   | **better.** Uses semiconductor chips to store data and have no moving parts. **SSD is electronic. No moving parts. They read from flash modules.** | Uses magnetic (spinning) platters and moving parts to store data (mechanical arm with a read/write head to move around and read information from the right location on a storage platter) **Physical. Physical is slower than electronic.** |
+| Physical size                    | **better** (Small)                                           | Big                                                          |
+| Access time                      | **better** (0.1ms)                                           | 5.5+ms                                                       |
+| Random io/s                      | **better** (6000)                                            | 400                                                          |
+| Failure rate                     | **better** (<0.5%)                                           | <2+%                                                         |
+| Energy consumption               | **better** (low)                                             | high                                                         |
+| I/O Wait                         | **better** (1%)                                              | 7%                                                           |
+| Request time (data access speed) | **better** (20ms)                                            | 400+ms                                                       |
+
+More useful info
+
+- https://www.enterprisestorageforum.com/storage-hardware/ssd-vs-hdd.html
+- https://superuser.com/questions/571527/sata3-6gb-s-hdd-vs-ssd
+- https://www.storagereview.com/ssd_vs_hdd
+
+### Why is SSD works much better than HDD
+
+
+
+## Virtual memory
+
 
 
 More useful info
-- https://en.wikipedia.org/wiki/Wi-Fi_Protected_Access
 
-## Virtual memory
-## Cache
-## HDD, SSD, DRAM
+- https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
+
+
+# Front-end
+
+## Web page redirection methods
+
+
+
+## Unicode, UTF-8, base64
+
+More useful info
+
+- https://9oelm.github.io/2018-05-11--Base64,-Unicode,-ASCII,-URL/
+
+## Map and reduce
+
+## How to avoid callback hell
+
+## Why reflow happens and how to prevent it
+
+More useful info
+
+- https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+
+## Pros and cons of typescript
+
+## Why is front-end going functional
+
+## Explain the inner structure of apk
+
+## Explain GC in Android or iOS
+
+## JS Profiler
+
+## B+ tree
+
+## Linear map
+
+
+
+
+
+
+
+## Multi-column index
+
 ## Pros & cons of NoSQL
+
 ## Node.js
 ## CDN
 ## Infrastructure as code
 ## MV* Pattern
+
