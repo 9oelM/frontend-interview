@@ -1,3 +1,392 @@
+
+# Front-end
+
+## Javascript
+<details>
+  <summary>Explain the difference between <code>new String(1)</code> and <code>String(1)</code>.</summary>
+  
+  - `new String(1)` creates a string object. `typeof new String(1) === 'object'`
+  
+  - `String(1)` creates a primitive string variable. `typeof String(1) === 'string'`. But we can still call String object method on this variable because the browser will auto-box this object. 
+
+  - `new` keyword is used to execute a function and return an object. This happens when `new` is used:
+    - A new object is created
+    - `this` is bound to the new object
+    - The new (empty) object is returned, unless the function returns its own object
+    - The newly created object is assigned as value to the variable
+  
+  Remember you can always call `new` on classes as well as functions:
+  ```js
+  function Person(name){
+    return {
+      name
+    }
+  }
+
+  const person = new Person('Joel') // { name: 'Joel' }
+  
+  // or this way:
+  function Person(name){
+    this.name = name
+  }
+
+  // or ES6 class:
+  class Person{
+    constructor(name){
+      this.name = name
+    }
+  }
+
+  const person = new Person('Joel') // { name: 'Joel' }
+  ```
+  
+  See more at:
+  - https://medium.com/front-end-weekly/difference-between-string-primitives-and-string-object-d962b7ab8496
+  - https://hackernoon.com/understanding-javascript-new-keyword-ec67c8caaa74
+
+</details>
+<details>
+  <summary>Explain the difference between <code>const person = Person()</code> vs <code>const person = new Person()</code> provided <code>function Person(){...}</code></summary>
+  
+  ```js
+  const person = Person()
+  ```
+  
+  On the other hand, this just calls the function and assigns the function output to the variable `person`. 
+
+  ```js
+  const person = new Person()
+  ``` 
+
+  This creates an **instance of the Person object** using the new operator, which inherits from `Person.prototype`.
+
+  In short, `Person` gets called as a **constructor**.
+
+</details>
+<details>
+  <summary>Explain <code>this</code> binding.</summary>
+  
+  To brief it, **`this` keyword refers to the object it belongs to.** But it's more complicated than that.
+
+  `this` is NOT author-time binding. **It’s a runtime binding. It depends on contexts.** It’s not about WHERE the function is called from, but **HOW the function is called.**  
+
+  ### Default binding
+  **Without the strict mode in effect**, the global object is **eligible** for the default binding: 
+  ```js
+  function foo() { console.log( this.a ); }
+
+  const a = 2;
+
+  foo(); // 2
+  ```
+
+  ### Implicit binding
+  When there is a context object (**object having a reference to a function or a variable**) for a function reference, the implicit binding rule says that **it’s that object which should be used for the function call’s `this` binding**.
+
+  ```js
+  function foo() {
+    console.log( this.a );
+  }
+
+  const obj = {
+    a: 2,
+    foo: foo
+  };
+
+  obj.foo(); // 2
+  ```
+
+  ### Explicit binding
+  Explicit binding uses `call` and `apply` to use a selected object for this binding. (For `call` and `apply`, see the next question)
+  
+  ```js
+  function foo() {
+    console.log( this.a );
+  }
+
+  const obj = {
+    a: 2
+  };
+
+  foo.call( obj ); // 2
+
+  // or
+
+  foo.apply(obj) // 2
+  ```
+  ### `new` binding
+
+  This is what happens if you call a function with `new`:
+  
+  1. a brand new object is created (aka, constructed) out of thin air
+  2. the newly constructed object is [[Prototype]]-linked (linked to the function object's prototype)
+  3. the newly constructed object is set as the this binding for that function call
+  4. unless the function returns its own alternate object, the new-invoked function call will automatically return the newly constructed object.
+
+  ### Precedence rule 
+  ```
+  Default < Implicit < Explicit < `new`
+  ```
+
+  ### Calling `call` or `apply` with `null` or `undefined`
+  Calling `call` or `apply` with `null` or `undefined` makes `this` ignored. This means calling `call`/`apply` with `null` as the first argument is **like calling the function without providing any object for `this`**.  
+  
+  ```js
+  function foo() {
+    console.log( this.a );
+  }
+
+  const a = 2;
+
+  foo.call( null ); // 2 because `this` now points to global object. 
+  ```
+
+  ### How to make a lexical `this` using an arrow function
+  **important note**: The lexical binding of an arrow-function cannot be overridden (even with `new`).
+  ```js
+    function Foo() {
+      this.a = 0
+      // return an arrow function
+      return () => {
+        // `this` here is lexically adopted from `foo()`
+        console.log( this.a );
+        };
+    }
+
+    function Foo2() {
+      this.a = 0
+      // return an arrow function
+      return function(){
+        // `this` here is lexically adopted from `foo()`
+        console.log( this.a );
+        };
+    }
+
+    const foo = new Foo()
+    foo() // logs 0
+
+    const foo2 = new Foo2()
+    foo2() // logs undefined, because now this inside the returned function binds to the global scope
+  ```
+
+  See more at:
+  - https://9oelm.github.io/2018-06-30--This-&-Object-prototypes-(2):-this-All-Makes-Sense-Now!/
+
+</details>
+<details>
+  <summary>Explain the difference between <code>call</code> and <code>apply</code>.</summary>
+  
+  Both `call` and `apply` are used to call a function with a given `this` value and arguments provided.
+
+  From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call:
+  > While the syntax of this function is almost identical to that of apply(), the fundamental difference is that **call() accepts an argument list**, while **apply() accepts a single array of arguments.**
+
+  - `call`: `function.call(thisArg, arg1, arg2, ...)`
+  - `apply`: `function.apply(thisArg, [argsArray])`
+  
+  This is how you can use `call`:
+  ```js
+  function Product(name, price) {
+    this.name = name;
+    this.price = price;
+  }
+
+  function Food(name, price) {
+    Product.call(this, name, price);
+    this.category = 'food';
+  }
+
+  console.log(new Food('cheese', 5).name);
+  // expected output: "cheese"
+  ``` 
+
+</details>
+<details>
+  <summary>Explain how to use <code>async</code>, <code>await</code> and <code>Promise</code> and why they are good (and better than callbacks).</summary>
+  
+  ### Promise
+  - it is **a proxy for a value not necessarily known when the promise is created.** 
+  - it allows you to solve these problems [Kyle Simpson mentions](https://github.com/getify/You-Dont-Know-JS/blob/master/async%20%26%20performance/ch3.md#promise-trust). For more, refer to the link as it is somewhat complicated:
+    1. Call the callback too early
+    2. Call the callback too late (or never): 
+    3. Call the callback too few or too many times
+    4. Fail to pass along any necessary environment/parameters
+    5. Swallow any errors/exceptions that may happen
+
+  Promise has 3 states:
+  - pending: initial state, neither fulfilled nor rejected.
+  - fulfilled: meaning that the operation completed successfully.
+  - rejected: meaning that the operation failed.
+
+  #### How to use `Promise`
+  Plug a function receiving `resolve` and `reject` as arguments into the `Promise` constructor. 
+
+  ```js
+  function test(){
+    return new Promise((resolve, reject) => {
+      setTimeout(()=>resolve('resolved'), 2000)
+    })
+  }
+
+  const foo = test()
+  foo.then(msg=>console.log(msg)) // logs "resolved"
+  ```
+
+  #### How to use `then`
+  `then` can take in two functions as its parameters—the former for `resolve`, and the latter for `reject`.
+  ```js
+  p.then(
+    (value)=>{
+        // value from resolve. 
+    },
+    (error)=>{
+        // probably error object was passed from reject
+    }
+  )
+  ```
+  or you can use `catch`:
+  ```js
+  p
+    .then((val) => console.log("fulfilled:", val))  
+    .catch((err) => console.log("rejected:", err))
+  ```
+
+  #### How to use `Promise.all` and `Promise.race`
+  - `all`: waits for **all promises inside the iterable object (array)** to be fulfilled or at least one of them to be rejected.
+  - `race`: waits until **any one of the promises** inside the iterable object rejects or resolves. 
+  These methods of course return a `Promise`. 
+
+  ### async and await
+  `async` and `await` are ES8 (2017) syntax. 
+  
+  The `async` function:
+  - the declaration, namely: `async test(){...}` becomes `AsyncFunction` object. 
+  - it operates asynchronously via **the event loop, using an implicit Promise** to return its result.
+  - it **returns a promise** resolved with the value returned by the function, or rejected with an uncaught exception thrown from within the function.
+  - if it returns something other than a promise, **it will be wrapped automatically into a resolved promise** with the value in it:
+  - can have `await` keyword inside. 
+  
+  The `await` keyword:
+  - waits for the promise to be fulfilled. **It pauses the execution of the async function**. Once it’s got the value, it resumes execution.
+  - is only valid inside `async` function:
+    ```js
+    function test(){ // syntax error because of no async keyword
+      await new Promise((resolve,reject)=>resolve(1)) 
+    }
+    ```
+
+</details>
+<details>
+  <summary>Explain the difference between undeclared vs <code>undefined</code> vs <code>null</code> and how to check for each of them in code.</summary>
+  
+  ### Undeclared
+  Undeclared variables: 
+  - are created when you assign a value to an identifier that is not previously created using `var`, `let` or `const`.
+  - are defined globally (regardless of scope)
+  - causes a `ReferenceError` in `strict` mode.
+  
+  ### `undefined`
+  `undefined` variable:
+  - is a variable that has been declared, but not assigned a value. 
+  - `typeof <an undefined variable>` returns `'undefined'`.
+
+  ### `null`
+  `null` variable:
+  - needs to be explicitly assigned a `null` value
+  - pitfall: `typeof null` returns `object`. 
+
+</details>
+<details>
+  <summary>Explain the difference between <code>==</code> and <code>===</code>.</summary>
+  
+  - `==` operator compares two sides **with type conversion** if needed.
+  - `===` operator compares two sides **without type conversion (strongly recommneded)**.
+
+  To know what's `true` and what's not, just look into the table from https://dorey.github.io/JavaScript-Equality-Table/:
+  
+  ### ==
+
+  ![javascript equality table](./javascript-equality-table.png)
+
+  ## ===
+
+  ![javascript strict equality table](./javascript-strict-equality-table.png)
+
+  Notice that the table for `===` comparison is crystal clear. There's no reason not to use this.
+  
+</details>
+<details>
+  <summary>Explain the order of execution between type conversion and calculation. e.g. what is the answer of <code>3+2+"7"</code>?</summary>
+
+</details>
+<details>
+  <summary>Explain javascript design patterns: most prominently, Singleton, Observer, Factory.</summary>
+  
+
+</details>
+<details>
+  <summary>Explain how you could deal with a <code>var</code> variable in a for loop to have it reset every loop</summary>
+</details>
+<details>
+  <summary>Explain javascript design patterns: most prominently, Singleton, Observer, Factory.</summary>
+  
+</details>
+<details>
+  <summary>How does prototypical inheritance work</summary>
+  
+</details>
+<details>
+  <summary>Explain the difference among <code>forEach</code> vs <code>for ... in </code> vs <code>for ... of </code>vs <code>map</code>.</summary>
+  
+</details>
+<details>
+  <summary>Explain the difference between jsonp vs ajax.</summary>
+</details>
+<details>
+  <summary>Explain the difference between <code>window.onload</code> vs <code>'DOMContentLoaded'</code> vs <code>'load'</code></summary>
+</details>
+<details>
+  <summary>Explain the difference between <code>()=>{}</code> and <code>function(){}</code></summary>
+</details>
+<details>
+  <summary>Explain the usage of <code>static</code> keyword in <code>class</code></summary>
+</details>
+<details>
+  <summary>Explain event bubbling.</summary>
+</details>
+<details>
+  <summary>Explain how javascript works on the browser (memory heap, call stack, event loop, callback queue, gc, web APIs...)</summary>
+</details>
+
+
+## React
+
+## Redux
+
+## Web page redirection methods
+
+## REST
+
+## Unicode, UTF-8, base64
+
+More useful info
+
+- https://9oelm.github.io/2018-05-11--Base64,-Unicode,-ASCII,-URL/
+
+## Map and reduce
+
+## How to avoid callback hell
+
+## Why reflow happens and how to prevent it
+
+More useful info
+
+- https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+
+## Pros and cons of typescript
+
+## Why is front-end going functional
+
 # Network
 
 ## OSI
@@ -192,8 +581,8 @@ The **negotiation** between a browser and a server, is called "the handshake".
 2. **[SERVER HELLO 1]** SERVER **chooses the best SSL/TLS version and encryption algorithm** based on its preferences.
 3. **[SERVER HELLO 2]** SERVER replies with its certificate (includes public key)
 4. **[Client Key Exchange 1]** CLIENT verifies legitimacy of the certificate.
-5. **[Client Key Exchange 2]** CLIENT generates a **pre-master key**, encrypts it with the public key, a**nd sends it back to SERVER. The **pre-master key is a random byte string that enables both the client and the server to compute the secret key to be used for encrypting subsequent message.**
-6. **[Change Cypher spec 1]** SERVER decrypts with its private key to get the **pre-master key**.
+5. **[Client Key Exchange 2]** CLIENT generates a **code-master key**, encrypts it with the public key, a**nd sends it back to SERVER. The **code-master key is a random byte string that enables both the client and the server to compute the secret key to be used for encrypting subsequent message.**
+6. **[Change Cypher spec 1]** SERVER decrypts with its private key to get the **code-master key**.
 7. **[Change Cypher spec 2]** SERVER and CLIENT both generate the same 'shared secret' to use for subsequent messaging
 8. **["Finished"]** CLIENT sends **"finished" message encrypted with the secret key**. SERVER decrypts it. 
 9. **["Finished"]** SERVER sends **"finished" message encrypted with the secret key**. CLIENT decrypts it.
@@ -404,31 +793,6 @@ More useful info
 
 - https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
 
-# Front-end
-
-## Web page redirection methods
-
-
-
-## Unicode, UTF-8, base64
-
-More useful info
-
-- https://9oelm.github.io/2018-05-11--Base64,-Unicode,-ASCII,-URL/
-
-## Map and reduce
-
-## How to avoid callback hell
-
-## Why reflow happens and how to prevent it
-
-More useful info
-
-- https://gist.github.com/paulirish/5d52fb081b3570c81e3a
-
-## Pros and cons of typescript
-
-## Why is front-end going functional
 
 ## Explain the inner structure of apk
 
