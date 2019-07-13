@@ -2,6 +2,7 @@
 # Front-end
 
 ## Javascript
+
 <details>
   <summary>Explain the difference between <code>new String(1)</code> and <code>String(1)</code>.</summary>
   
@@ -45,6 +46,7 @@
   - https://hackernoon.com/understanding-javascript-new-keyword-ec67c8caaa74
 
 </details>
+
 <details>
   <summary>Explain the difference between <code>const person = Person()</code> vs <code>const person = new Person()</code> provided <code>function Person(){...}</code></summary>
   
@@ -119,7 +121,7 @@
   This is what happens if you call a function with `new`:
   
   1. a brand new object is created (aka, constructed) out of thin air
-  2. the newly constructed object is [[Prototype]]-linked (linked to the function object's prototype)
+  2. the newly constructed object is `[[Prototype]]`-linked (linked to the function object's prototype)
   3. the newly constructed object is set as the this binding for that function call
   4. unless the function returns its own alternate object, the new-invoked function call will automatically return the newly constructed object.
 
@@ -150,16 +152,16 @@
       return () => {
         // `this` here is lexically adopted from `foo()`
         console.log( this.a );
-        };
+      };
     }
 
     function Foo2() {
       this.a = 0
       // return an arrow function
       return function(){
-        // `this` here is lexically adopted from `foo()`
+        // `this` here is NOT lexically adopted from `foo()`
         console.log( this.a );
-        };
+      };
     }
 
     const foo = new Foo()
@@ -304,11 +306,11 @@
 
   To know what's `true` and what's not, just look into the table from https://dorey.github.io/JavaScript-Equality-Table/:
   
-  ### ==
+  ### `==`
 
   ![javascript equality table](./javascript-equality-table.png)
 
-  ## ===
+  ## `===`
 
   ![javascript strict equality table](./javascript-strict-equality-table.png)
 
@@ -316,37 +318,422 @@
   
 </details>
 <details>
-  <summary>Explain the order of execution between type conversion and calculation. e.g. what is the answer of <code>3+2+"7"</code>?</summary>
+  <summary>Explain the order of execution between type conversion and calculation. e.g. what is the answer of <code>3+2+"7"</code> and <code>3+"7"+2</code> and <code>"7"+3+2</code>?</summary>
+  
+  `3+2+"7"`: "57"
+  ```js
+  3 + 2 = 5
+  5 + "7" = "57"
+  ```
+  
+  `3+"7"+2`: "372"
+  ```js
+  3 + "7" = "37"
+  "37" + 2 = "372"
+  ```
+  
+  `"7"+3+2`: "732" 
+  ```js
+  "7"+3 = "73"
+  "73" + 2 = "732"
+  ```
+
+  Moral: 
+  1. Addition operations containing a mix of `number`s and `string`s will output `string`.  
+  2. When javascript engine faces a `number` and a `string` added together, it will **the `number`** into `string` to concatenate the two. e.g. `1+"st" = "1st"`
 
 </details>
+
+<details>
+  <summary>Explain how you could deal with a <code>var</code> variable in a for loop to have it reset every loop: e.g. <code>for(var i = 0; i < 10; i++){ setTimeout( ()=>console.log(i), i*1000 ) }</code></summary>
+
+  ### What is the problem?
+  The problem is that there is **only one variable created in the scope of `for` loop**. Then the `i` inserted inside the callback of `setTimeout` is **only from one variable.** At the end of the loop, `i` would be come `10`, and then `console.log(i)` would naively output ten lines of of `10`.
+
+  ### Method 1: use `let`
+  `let` simply creates a new scope for every loop. 
+  ```js
+  for(let i = 0; i < 10; i++){
+    setTimeout(()=>{
+      console.log(i)
+    }, i * 1000)
+  }
+  ```
+
+  ### Method 2: use IIFE
+  Similarly, IIFE would allow you to create a new scope for every loop.
+  ```js
+  for(var i = 0; i < 10; i++){
+    (function(j){
+      setTimeout(()=>{
+        console.log(j)
+      }, j*1000)
+    })(i)
+  }
+  ```
+
+  This problem is kind of pre-ES6; from ES6 on, this should not be a problem at all because you could simply use `let` and never use `var`. Personally, I never find a situation to use `var`.  
+
+</details>
+
 <details>
   <summary>Explain javascript design patterns: most prominently, Singleton, Observer, Factory.</summary>
   
+  ### Singleton
+  Ensures a class has only one instance and provide a global point of access to it.
+  
+  ```js
+  const mySingleton = (function () {
+ 
+  // Instance stores a reference to the Singleton
+  let instance;
+ 
+  function init() {
+ 
+    // Singleton
+ 
+    // Private methods and variables
+    function privateMethod(){
+        console.log( "I am private" );
+    }
+ 
+    let privateVariable = "Im also private";
+ 
+    let privateRandomNumber = Math.random();
+ 
+    return {
+ 
+      // Public methods and variables
+      publicMethod: function () {
+        console.log( "The public can see me!" );
+      },
+ 
+      publicProperty: "I am also public",
+ 
+      getRandomNumber: function() {
+        return privateRandomNumber;
+      }
+ 
+    };
+ 
+  };
+ 
+  return {
 
-</details>
-<details>
-  <summary>Explain how you could deal with a <code>var</code> variable in a for loop to have it reset every loop</summary>
-</details>
-<details>
-  <summary>Explain javascript design patterns: most prominently, Singleton, Observer, Factory.</summary>
+    // Get the Singleton instance if one exists
+    // or create one if it doesn't
+    getInstance: function () {
+
+      if ( !instance ) {
+        instance = init();
+      }
+
+      return instance;
+    }
+
+  };
+ 
+  })();
+
+  const singleA = mySingleton.getInstance();
+  const singleB = mySingleton.getInstance();
+  console.log( singleA.getRandomNumber() === singleB.getRandomNumber() ); // true
+  ```
   
-</details>
-<details>
-  <summary>How does prototypical inheritance work</summary>
+  ### Observer
+  - An object (known as a subject) **maintains a list of objects depending on it (observers)**, automatically notifying them of any changes to state.
+  - When a subject needs to notify observers, it broadcasts a notification to the observers.
+  - When a subject does not need an observer anymore, it can remove it from the list of observers.
+
+  ```js
+  class ObserverList{
+    constructor(){
+      let observerList = []
+      this.get = () => observerList
+    }
+
+    add(obj){
+      return this.get().push(obj)
+    }
+
+    count(){
+      return this.get().length;
+    }
+
+    getObserverAt(index){
+      if( index > -1 && index < this.get().length ){
+        return this.get()[ index ];
+      }
+    }
+
+    indexOf(obj){
+      return this.get().findIndex(ob=>ob===obj)
+    }
+
+    removeAt(index){
+      return this.get().splice(index, 1)
+    }
+  }
+
+  class Subject{
+    constructor(updateFunc){
+      let observers = new ObserverList()
+      this.get = () => observers
+      this.update = updateFunc
+    }
+
+    addObserver(observer){
+      this.get().add(observer)
+    }
+
+    removeObserverAt(index){
+      this.get().removeAt(index)
+    }
+
+    notify(context){
+      this.get().forEach(observer => this.update(context))
+    }
+  }
+  ```
+
+  ### Factory (WIP)
   
+  - Factory provides a generic interface for creating objects specified with the type of factory object.
+  - e.g. UI factory creates different types of UI components. You don't need `new` operator. You inform the Factory the type (e.g "Button", "Panel") and it instantiates this, returning it to us for use. 
+
+  ```js
+  const Animal = function(name){
+      const animal = {};
+      animal.name = name;
+      animal.walk = function(){
+          console.log(this.name + " walks");
+      }
+      return animal;
+  };
+  ```
+
+
+  See more at:
+  - https://www.dofactory.com/javascript/singleton-design-pattern
+  - https://addyosmani.com/resources/essentialjsdesignpatterns/book/#singletonpatternjavascript (source codes for this question)
+</details>
+
+<details>
+  <summary>How does prototypal inheritance work?</summary>
+  
+  - All JavaScript objects have a prototype property, that is a reference to another object. When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's prototype, and the prototype's prototype and so on, until it finds the property defined on one of the prototypes or until it reaches the end of the prototype chain. This mimics inheritance in other languages.
+  - The top-end of every normal `[[Prototype]]` chain is the built-in Object.prototype. This object includes a variety of common utilities used all over JS:
+    ```js
+    constructor: f constructor()
+    hasOwnProperty: ƒ hasOwnProperty()
+    isPrototypeOf: ƒ isPrototypeOf()
+    propertyIsEnumerable: ƒ propertyIsEnumerable()
+    toLocaleString: ƒ toLocaleString()
+    toString: ƒ toString()
+    valueOf: ƒ valueOf()
+    ```
+  - `const linked = Object.create(obj)` creates an object `linked` linked to `obj`.
+  - "Inheritance" implies a copy operation, and JavaScript doesn't copy object properties (natively, by default). Instead, JS creates a link between two objects, where one object can essentially delegate property/function access to another object.
+  - You don't create multiple instances of a class. You can create multiple objects that `[[Prototype]]` link to a common object. 
+
+  ![Classic vs Prototypal inheritance](./prototypal-inheritance.png)
+
+  The diagrams suggest somewhere in the code `Bar extends Foo` was present. 
+
+  Here in the picture, `a1`, `a2`, `b1`, and `b2` are instances of `Foo` and `Bar` respectively. Note that instances in javascript point back to `[[Prototype]]` and then `[[Prototype]]`'s `[[Prototype]]`. In contrast, in other normal languages, 
+
+  See more at:
+  - https://github.com/yangshun/front-end-interview-handbook/blob/master/questions/javascript-questions.md#explain-how-prototypal-inheritance-works (explanation copied)
+  - https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch5.md
+
 </details>
 <details>
   <summary>Explain the difference among <code>forEach</code> vs <code>for ... in </code> vs <code>for ... of </code>vs <code>map</code>.</summary>
   
+  ### forEach
+  `forEach` does NOT return anything from the callback. If you want to, you should use `map`. 
+  
+  ```js
+  [..].forEach(elem, index, arr) => {...}) 
+  ```
+
+  ### map
+  Creates a new array with the results of calling a provided function on every element in the calling array.
+  
+  ```js
+  const mappedArray = [..].forEach(elem, index, arr) => {...}) 
+  ```
+
+  ### for ... of
+  The for...of statement creates a loop iterating over iterable objects, including: built-in String, Array, Array-like objects (e.g., arguments or NodeList), TypedArray, Map, Set, and user-defined iterables. **DOES NOT loop over objects**.
+
+  ```js
+  for (let value of [1,2,3]) {
+    console.log(value); 
+  } // 1 2 3
+  ```
+
+  ### for ... in
+  The for...in statement iterates over all non-Symbol, **enumerable properties of an OBJECT.**. Normally used to iterate over the keys of object (Alternative: `Object.keys(obj).forEach(key=>{...}`))
+  
+  ```js
+  obj = {
+    [Symbol()]: 1,
+    test: 2,
+    hi: 3
+  }
+  
+  for(let key in obj){
+	  console.log(obj[key])
+  } // outputs 2 3
+
+  obj.propertyIsEnumerable('test') // true
+  obj.propertyIsEnumerable(Symbol()) // false
+  ```
+
+  See more at:
+  - https://stackoverflow.com/questions/29285897/what-is-the-difference-between-for-in-and-for-of-statements-in-jav
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+
 </details>
 <details>
   <summary>Explain the difference between jsonp vs ajax.</summary>
+  
+  ### The problem
+  When requesting a resource from another domain that is not under our control from a web application, we may be presented with a message Failed to load resource: `Origin * is not allowed by Access-Control-Allow-Origin..` This means that the browser is blocking our request to access a given resource - the resource being an API endpoint.
+
+  ### CORS
+  - Cross-Origin Resources Sharing (CORS) is a security protocol implemented by browsers. 
+  - By default, web browsers do not allow AJAX requests to servers other than the site you’re visiting. This is called the same-origin policy and it’s an important part of the web security model. **You never know what those servers will send back**
+  - It allows resources to be shared coming from a variety of origins.
+  - domain1.com is said to make a cross-origin request when it accesses a resource from domain2.com (the resource being an image, a CSS file or anything else). 
+
+  ### JSONP
+  JSON with padding.
+  - can avoid CORS errors
+  - only applies to `GET` methods
+  - cannot handle errors (either CORS or 404 error). Cannot handle using `catch`.
+  - exposes CSRF (Cross-Site Request Forgery) vulnerabilities.
+  - normally you don't write the script tag yourself (you use jQuery)
+
+  JSONP works like this ([schier provided a great explanation for this](https://schier.co/blog/2013/09/30/how-jsonp-works.html)):
+  
+  1. create a function in the global space to handle the JSON returned from the API. 
+  
+  ```js
+  function myCallbackFunction(data) {
+    console.log(data);
+  }
+  ```
+  
+  2. create a new `<script>` tag using `window.createElement()`
+  3. set the `src` attribute to the desired JSONP endpoint
+  
+  ```js
+  <script src="http://cool-stuff.com/api.json?callback=myCallbackFunction"></script>
+  ```
+  
+  4. add the `<script>` to the `<head>` of the DOM (or any valid tags, like `<body>`)
+  5. the API endpoint returns the JSON wrapped (Padded) with the name of the callback:
+  
+  ```js
+  myCallbackFunction({'awesome': 'data'});
+  ```
+  
+  6. The callback is immediately executed since it's inside a script tag. `myCallbackFunction` gets called and logs `{'awesome': 'data'}`. 
+
+  See more at:
+  - https://blog.fullstacktraining.com/why-jsonp-shouldnt-be-used/
+  - https://mobilejazz.com/blog/which-security-risks-do-cors-imply/
+  - https://blog.fullstacktraining.com/what-is-cors/
+  - https://stackoverflow.com/questions/10193085/confused-on-how-a-jsonp-request-works
+  - https://schier.co/blog/2013/09/30/how-jsonp-works.html
+  - https://lucybain.com/blog/2015/how-does-jsonp-work/
+
 </details>
 <details>
-  <summary>Explain the difference between <code>window.onload</code> vs <code>'DOMContentLoaded'</code> vs <code>'load'</code></summary>
+  <summary>Explain the difference between <code>'DOMContentLoaded'</code> vs <code>'load'</code></summary>
+
+  - The `DOMContentLoaded` event fires when the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading.
+  - The `load` event is fired when the whole page has loaded, including all dependent resources such as stylesheets images. 
+
+  See more at:
+  - https://developer.mozilla.org/en-US/docs/Web/Reference/Events/DOMContentLoaded
+
 </details>
 <details>
-  <summary>Explain the difference between <code>()=>{}</code> and <code>function(){}</code></summary>
+  <summary>Explain the difference between <code>()=>{}</code> and <code>function(){}</code> in relation to binding.</summary>
+
+  Before arrow functions, every new function defined its own this value based on how the function was called. But an arrow function does not have its own `this`. The `this` value of the enclosing lexical scope is used; arrow functions follow the normal variable lookup rules. **So while searching for `this` which is not present in current scope, an arrow function ends up finding the `this` from its enclosing scope.** 
+
+  Pre-ES6:
+  ```js
+  function Person() {
+    // The Person() constructor defines `this` as an instance of itself.
+    this.age = 0;
+
+    setInterval(function growUp() {
+      // In non-strict mode, the growUp() function defines `this`
+      // as the global object (because it's where growUp() is executed.), 
+      // which is different from the `this`
+      // defined by the Person() constructor.
+
+      // this will not work as intended
+      // resulting in: undefined++; which is nothing
+      this.age++;
+    }, 1000);
+  }
+
+  var p = new Person();
+  ```
+
+  The 'that' fix in pre-ES6:
+  ```js
+  function Person() {
+    var that = this;
+    that.age = 0;
+
+    setInterval(function growUp() {
+      // The callback refers to the `that` variable of which
+      // the value is the expected object.
+      that.age++;
+    }, 1000);
+  }
+  ```
+
+  ES6:
+  ```js
+  function Person(){
+    this.age = 0;
+
+    setInterval(() => {
+      this.age++; // |this| properly refers to the Person object
+    }, 1000);
+  }
+
+  var p = new Person();
+  ```
+
+
+  ```js
+ 'use strict';
+
+  var obj = {
+    i: 10,
+    b: () => console.log(this.i, this),
+    c: function() {
+      console.log(this.i, this);
+    }
+  }
+
+  obj.b(); // prints undefined, Window {...} (or the global object)
+  obj.c(); // prints 10, Object {...} 
+  ```
+  
+  See more at:
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_separate_this
+
 </details>
 <details>
   <summary>Explain the usage of <code>static</code> keyword in <code>class</code></summary>
@@ -357,7 +744,12 @@
 <details>
   <summary>Explain how javascript works on the browser (memory heap, call stack, event loop, callback queue, gc, web APIs...)</summary>
 </details>
-
+<details>
+  <summary>Explain the limitation of floating point number system in javascript.</summary>
+</details>
+<details>
+  <summary>Explain <code>map</code> and <code>reduce</code>.</summary>
+</details>
 
 ## React
 
