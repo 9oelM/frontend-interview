@@ -1,5 +1,5 @@
 
-# Front-end
+# frontend-interview
 
 ## Javascript
 
@@ -750,38 +750,46 @@
 <details>
   <summary>Explain <code>map</code> and <code>reduce</code>.</summary>
 </details>
+<details>
+<summary>Explain the use of javascript profiler.</summary>
+</details>
 
 ## React
 
 ## Redux
 
-## Web page redirection methods
+## Front-end general 
+<details>
+  <summary>Explain web page redirection methods.</summary>
+</details>
+<details>
+  <summary>Explain Unicode, UTF-8, and base64</summary>
+</details>
+<details>
+<summary>Explain the usage of CDN.</summary>
+</details>
+<details>
+  <summary>Explain why reflow happens and how to prevent it</summary>
 
-## REST
+  See more at:
+  - https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+</details>
+<details>
+  <summary>Explain pros and cons of typescript</summary>
 
-## Unicode, UTF-8, base64
+</details>
+<details>
+  <summary>Explain why front end is going functional</summary>
+</details>
 
-More useful info
+## Network
+<details>
+  <summary>What is REST?</summary>
+</details>
+<details>
+  <summary>Explain OSI layers.</summary>
 
-- https://9oelm.github.io/2018-05-11--Base64,-Unicode,-ASCII,-URL/
-
-## Map and reduce
-
-## How to avoid callback hell
-
-## Why reflow happens and how to prevent it
-
-More useful info
-
-- https://gist.github.com/paulirish/5d52fb081b3570c81e3a
-
-## Pros and cons of typescript
-
-## Why is front-end going functional
-
-# Network
-
-## OSI
+### OSI
 
 The OSI (Open Systems Interconnection) Model is:
 
@@ -874,12 +882,17 @@ The OSI (Open Systems Interconnection) Model is:
 ![OSI layers 2](./osi-layers-2.PNG)
 ![OSI layers 3](./osi-layers-3.PNG)
 
-More useful info
+See more at:
 
 - https://medium.com/@madhavbahl10/osi-model-layers-explained-ee1d43058c1f
 - https://www.plixer.com/blog/network-monitoring/network-layers-explained/
 
-## HTTP/2
+
+</details>
+<details>
+  <summary>Explain HTTP/2 and distinguish it from HTTP/1.x</summary>
+
+### HTTP/2
 
 ### Goal of HTTP/2
 
@@ -903,9 +916,12 @@ More useful info
 - **does not compress request and response headers**, causing unnecessary network traffic; 
 - **does not allow effective resource prioritization**, resulting in poor use of the underlying TCP connection;
 
-More useful info 
+See more at: 
 
 - https://developers.google.com/web/fundamentals/performance/http2/
+</details>
+<details>
+  <summary>Explain why you should use HTTPS and how it works.</summary>
 
 ## HTTPS
 
@@ -929,11 +945,15 @@ Proving that the website your browser is talking to is who they say they are.
 
 - HTTPS, via **SSL certificates**, ensures you are connected exactly with the receiver you would expect.
 
-More useful info
+See more at:
 
 - https://www.howtogeek.com/181767/htg-explains-what-is-https-and-why-should-i-care/
 - https://strongarm.io/blog/how-https-works/
 - https://howhttps.works/
+
+</details>
+<details>
+  <summary>Explain symmetric and asymmetric cryptography.</summary>
 
 ## Symmetric & Asymmetric cryptography 
 
@@ -965,6 +985,11 @@ More useful info
 
 > In the case of you browsing the web, your browser gives the server its public key. The server uses this key to encrypt data to be sent to your browser, which then uses its private key to decrypt.
 
+</details>
+<details>
+  <summary>Explain HTTPS handshake (in relation to SSL/TLS)</summary>
+
+
 ### The HTTPS (SSL/TLS) handshake
 
 The **negotiation** between a browser and a server, is called "the handshake".
@@ -984,7 +1009,7 @@ The **negotiation** between a browser and a server, is called "the handshake".
 
 ![SSL Handshake](./ssl-handshake.png)
 
-More useful info
+See more at:
 
 - https://stackoverflow.com/questions/3968095/how-does-https-provide-security
 - https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.1.0/com.ibm.mq.doc/sy10660_.htm
@@ -995,12 +1020,16 @@ More useful info
 
 > TLS is the new name for SSL. **Namely, SSL protocol got to version 3.0; TLS 1.0 is "SSL 3.1".** TLS versions currently defined include TLS 1.1 and 1.2. Each new version adds a few features and modifies some internal details. We sometimes say "SSL/TLS".
 
-More useful info
+See more at:
 
 - https://stackoverflow.com/questions/3690734/difference-between-ssl-tls
 - https://security.stackexchange.com/questions/5126/whats-the-difference-between-ssl-tls-and-https
 
-## How could SSL/TLS not be safe
+</details>
+
+
+<details>
+<summary>Explain why SSL/TLS are not safe anymore</summary>
 
 **IMPORTANT**: as of [**February 2019, TLS v1.3 (state-of-art protocol) is no longer safe.**](https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/) More easily said: NOTHING IS SAFE. 
 
@@ -1012,7 +1041,7 @@ More useful info
 
 Some known vulnerabilities: [POODLE](https://en.wikipedia.org/wiki/POODLE), [BEAST](https://en.wikipedia.org/wiki/Transport_Layer_Security#BEAST_attack), [CRIME](https://en.wikipedia.org/wiki/CRIME), [BREACH](https://en.wikipedia.org/wiki/BREACH), [Heartbleed](http://heartbleed.com/)
 
-More useful info
+See more at:
 
 - https://kb.iweb.com/hc/en-us/articles/230268628-SSL-TLS-issues-POODLE-BEAST-SWEET32-attacks-and-the-End-of-SSLv3-OpenSSL-Security-Advisory
 - https://www.acunetix.com/blog/articles/tls-ssl-cipher-hardening/
@@ -1021,15 +1050,17 @@ More useful info
 - https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/
 - https://securityboulevard.com/2019/02/security-researchers-discloses-vulnerabilities-in-tls-libraries-and-the-downgrade-attack-on-tls-1-3/
 
-## Wifi: WEP, WPA, WPA2, WPA3
+</details>
 
-More useful info
+<details>
+<summary>Explain different types of wifi network encryptions: WEP, WPA, WPA2, WPA3.</summary>
+</details>
 
-- https://en.wikipedia.org/wiki/Wi-Fi_Protected_Access
+## Computer general
+<details>
+<summary>Explain the difference among PNG vs JPG vs Bitmap vs GIF</summary>
 
-# Computer organization
 
-## PNG vs JPG vs Bitmap vs GIF
 
 |                                                              | PNG                                   | JPG(=JPEG)                                                 | BMP                     | GIF                                                          |
 | ------------------------------------------------------------ | ------------------------------------- | ---------------------------------------------------------- | ----------------------- | ------------------------------------------------------------ |
@@ -1041,15 +1072,15 @@ More useful info
 | Animation                                                    | X                                     | X                                                          | X                       | O                                                            |
 | Used for                                                     | Recommended for static graphics/icons | Photographs (small size, fairly good quality, many colors) | Almost nothing          | Logos, line drawings, and other simple images that need to be small. |
 
-More useful info
+See more at:
 
 - http://ist.uwaterloo.ca/~anderson/images/GIFvsJPEG/compression_rates.html
 - https://superuser.com/questions/53600/jpeg-vs-png-vs-bmp-vs-gif-vs-svg
 - https://www.techsmith.com/blog/jpg-vs-png/
 
-## How does compression work? What's lossy and loseless compression?
-
-### Compression
+</details>
+<details>
+<summary>Explain how compression works. What's lossy and loseless compression?</summary>
 
 ### Loseless compression
 
@@ -1061,12 +1092,17 @@ More useful info
 - Drops unimportant details to save storage
 - **Examples**: JPEG, DVD, Blu-ray
 
-More useful info
+See more at:
 
 - https://stackoverflow.com/questions/16469410/data-compression-algorithms
 - https://superuser.com/questions/132303/how-does-file-compression-work
 
-## Cache
+</details>
+
+## Computer organization
+<details>
+<summary>Explain the use of cache.</summary>
+
 
 ### Cache memory 
 
@@ -1075,7 +1111,7 @@ More useful info
 - **holds frequently requested data and instructions** immediately available to the CPU when needed.
 - **reduces the average time to access** data from RAM
 
-#### Levels in cache memory
+### Levels in cache memory
 
 #### 1. L1 (AKA Register)
 
@@ -1121,20 +1157,22 @@ console.log(func(2))
 // 12
 ```
 
-More useful info for **Cache memory**
+See more at: for **Cache memory**
 
 - https://searchstorage.techtarget.com/definition/cache-memory
 - https://www.webopedia.com/TERM/C/cache.html
 - https://www.bbc.com/bitesize/guides/zmb9mp3/revision/3
 - https://www.geeksforgeeks.org/cache-memory/
 
-More useful info for **Cache in programming**
+See more at: for **Cache in programming**
 
 - https://9oelm.github.io/2019-05-05--Memoization-in-python-using-a-decorator:-getting-a-prime-number/
 
-## HDD, SSD, DRAM, SRAM
+</details>
 
-#### HDD vs SSD
+<details>
+<summary>Explain the difference between HDD and SSD.</summary>
+
 
 |                                  | SSD(Solid State Drive)                                       | HDD(Hard Disk Drive)                                         |
 | -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -1147,11 +1185,17 @@ More useful info for **Cache in programming**
 | I/O Wait                         | **better** (1%)                                              | 7%                                                           |
 | Request time (data access speed) | **better** (20ms)                                            | 400+ms                                                       |
 
-More useful info
+See more at:
 
 - https://www.enterprisestorageforum.com/storage-hardware/ssd-vs-hdd.html
 - https://superuser.com/questions/571527/sata3-6gb-s-hdd-vs-ssd
 - https://www.storagereview.com/ssd_vs_hdd
+
+</details>
+
+
+<details>
+<summary>Explain the difference between DRAM vs SRAM.</summary>
 
 #### DRAM vs SRAM
 
@@ -1168,7 +1212,7 @@ More useful info
 
 ------
 
-More useful info
+See more at:
 
 - https://techdifferences.com/difference-between-sram-and-dram.html
 - https://www.diffen.com/difference/Dynamic_random-access_memory_vs_Static_random-access_memory
@@ -1177,39 +1221,41 @@ More useful info
 - https://superuser.com/questions/638675/why-does-ram-have-to-be-volatile/638809
 - https://www.enterprisestorageforum.com/storage-hardware/sram-vs-dram.html
 
-## Virtual memory
+</details>
+<details>
+<summary>Explain the use of virtual memory.</summary>
 
-
-
-More useful info
-
+See more at:
 - https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
 
-
-## Explain the inner structure of apk
-
-## Explain GC in Android or iOS
-
-## JS Profiler
-
-## B+ tree
-
-## Linear map
+</details>
 
 
-
-
-
-
-
-## Multi-column index
-
-## Pros & cons of NoSQL
-
-## Node.js
-
-## CDN
-
-## Infrastructure as code
-
-## MV* Pattern
+## Todo 
+<details>
+<summary>Explain the inner structure of apk</summary>
+</details>
+<details>
+<summary>Explain GC in Android or iOS</summary>
+</details>
+<details>
+<summary>Explain B+ tree.</summary>
+</details>
+<details>
+<summary>Explain linear map.</summary>
+</details>
+<details>
+<summary>Explain multi-column index.</summary>
+</details>
+<details>
+<summary>Pros & cons of NoSQL.</summary>
+</details>
+<details>
+<summary>Explain Node.js.</summary>
+</details>
+<details>
+<summary>Explain infrastructure as code.</summary>
+</details>
+<details>
+<summary>Explain MV* patterns.</summary>
+</details>
