@@ -919,6 +919,9 @@ See more at:
 See more at: 
 
 - https://developers.google.com/web/fundamentals/performance/http2/
+- https://daniel.haxx.se/http2/
+- https://legacy.gitbook.com/download/pdf/book/bagder/http2-explained?lang=en
+
 </details>
 <details>
   <summary>Explain why you should use HTTPS and how it works.</summary>
