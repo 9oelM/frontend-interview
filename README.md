@@ -737,12 +737,57 @@
 </details>
 <details>
   <summary>Explain the usage of <code>static</code> keyword in <code>class</code></summary>
+	
+  ```js
+  class ClassWithStaticMethod {
+    static staticMethod() {
+      return 'static method has been called.';
+    }
+  }
+
+  console.log(ClassWithStaticMethod.staticMethod());
+  // expected output: "static method has been called."	
+  ```
+  
+  It's just the same as other languages. 
+  
+  See more at:
+  - https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Classes/static
+  
 </details>
 <details>
-  <summary>Explain event bubbling.</summary>
+  <summary>Explain event bubbling and capturing.</summary>
+	
+  Event bubbling and capturing(trickling) are two different ways of event propagation in HTML DOM API.
+  - bubbling: event captured by the innermost element and propagates to outer elements
+  - capturing: event captured by the outermost element and propagates to inner elements
+  
+  You can actually specify whether you want to use capturing in the third parameter (default is `false`): `addEventListener(type, listener, useCapture)`
+  
+  See more at:
+  - https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing
+	
 </details>
 <details>
   <summary>Explain how javascript works on the browser (memory heap, call stack, event loop, callback queue, gc, web APIs...)</summary>
+  
+  ### Compiled vs Interpreted?
+  #### What is compiled and interpreted anyways
+  - A **compiled program** is not human readable, but instead is in an architecture-specific machine language. 
+  - In an **interpreted program**, on the other hand, the source code typically is the program. Programs of this type (often known as scripts) require an interpreter, which parses the commands in the program and then executes them. 
+  - The advantage of a script is that it is very **portable**. Any computer that has the appropriate interpreter installed may run the program more or less unchanged. This is a disadvantage as well, because the program **will not run at all if the interpreter is not available**. In general, interpreted programs are **slower** than compiled programs, but are easier to debug and revise. 
+  
+  Eh. Both-ish. [This is what Stanford javascript course says](https://web.stanford.edu/class/cs98si/slides/overview.html): **JavaScript is an interpreted language, not a compiled language.** 
+  - C++ or Java need to be compiled before it is run. Compiler translates the code into bytecode that the machine understands and can execute. 
+  - Javascript has no compilation step. The interpreter in the browser reads the code, interprets each line, and runs it. **More modern browsers use a technology known as Just-In-Time (JIT) compilation, which compiles JavaScript to executable bytecode just as it is about to run.**
+  
+  ### 
+  
+  See more at:
+  - https://www.valentinog.com/blog/engines/
+  - https://codeburst.io/js-essentials-the-javascript-engine-302ff38e8465
+  - https://kb.iu.edu/d/agsz
+
 </details>
 <details>
   <summary>Explain the limitation of floating point number system in javascript.</summary>
