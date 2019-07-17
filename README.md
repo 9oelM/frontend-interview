@@ -796,10 +796,64 @@
     - Methods like `onClick`, `onLoad`, ...
   4. Event loop
   
-  #### The call stack
+  #### Memory heap, memory management, and garbage collection
+  - JavaScript automatically allocates memory when objects are created and frees it when they are not used anymore (garbage collection).
+  - There are two types of GC: reference-counting and mark-and-sweep.
+  - [**Reference-counting**: An object is said to be "garbage", or collectible **if there are zero references pointing to it**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management):
+  ```js
+    const x = { 
+      a: {
+        b: 2
+      }
+    }; 
+    
+    var y = x;      // The 'y' variable is the second thing that has a reference to the object.
+
+    x = 1;          // Now, the object that was originally in 'x' has a unique reference
+                    //   embodied by the 'y' variable
+    
+    var z = y.a;    // Reference to 'a' property of the object.
+                    //   This object now has 2 references: one as a property, 
+                    //   the other as the 'z' variable
+                    
+    y = 'mozilla';  // The object that was originally in 'x' has now zero
+       ^^^^^^^^^^   //   references to it. It can be garbage-collected.
+       this part    //   However its 'a' property is still referenced by 
+                    //   the 'z' variable, so it cannot be freed
+
+  ```
+  - Limitation for reference-counting: circular references. Circular references inside a certain scope will not be needed anymore once the scope is gone. However reference-counting algorithm will not free the memory allocated for the circular references because memory locations are still pointing to each other. 
+  - **Mark-and-sweep**: Improved version of reference-counting method. reduces the definition of "an object is no longer needed" to **"an object is unreachable".** In JavaScript, the root is the global object. GC, starting from the root, finds all objects referenced from it, then all objects referenced from this, etc. The GC will thus find all reachable objects and collect all non-reachable objects.
+  - As of 2012, **all modern browsers ship a mark-and-sweep garbage-collector.** 
+  
+  #### Call stack
   - Javascript has one thread, and thus one call stack. It can do only one thing at a time.
   - What happens when a function call in a call stack takes a lot of time to be processed?: 1. the browser can’t do anything else — it’s getting blocked. **It does not render/run other codes**. 2. It may stop being responsive, asking you if you want to wait or leave. So how do we get around with this? **Asynchronous callbacks.**
-  - Asynchronous callbacks. The Event Loop has just one job for now: it should check whether the Call Stack is empty. If there is some function into the Callback Queue and if the Call Stack is free, then it’s time to push the callback into the Call Stack. 
+  
+  #### Callback queue
+  ```js
+  const bar = () => console.log('bar')
+
+  const baz = () => console.log('baz')
+
+  const foo = () => {
+    console.log('foo')
+    setTimeout(bar, 0)
+    baz()
+  }
+
+  foo()
+  ```
+  This will output 
+  ```
+  foo
+  baz  
+  bar
+  ```
+  Because: When `setTimeout()` is called, the Browser or Node.js starts the timer. Once the timer expires, in this case immediately as we put 0 as the timeout, **the callback function is put in the callback queue.**
+
+  #### Event loop
+  - A process that checks the call stack and then trigger the callback queue continuously (if the stack's empty).
   
   See more at:
   - https://www.valentinog.com/blog/engines/
@@ -807,10 +861,40 @@
   - https://kb.iu.edu/d/agsz
   - https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf (pictures source)
   - https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e
+  - https://flaviocopes.com/javascript-event-loop/
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management
 
 </details>
 <details>
   <summary>Explain the limitation of floating point number system in javascript.</summary>
+	
+  ### Floating point number
+  > In JavaScript **all numbers are IEEE 754 floating point numbers.** Due to the binary nature of their encoding, some decimal numbers cannot be represented with perfect accuracy.
+  
+  ![floating point number 1](./floating-point-number-1.png)
+  
+  - s: the sign of the number. 1 means negative, 0 positive. 
+  - F: the fraction (also called mantissa) 
+  - E: the exponent.
+  
+  It consists of bits for different parts:
+  
+  ![floating point number 2](./floating-point-number-2.png)
+  
+  ![floating point number 3](./floating-point-number-3.png)
+  
+  Example: `-1.23 * 10^56`
+  
+  ### The problem 
+  - Floating-point numbers are represented as binary (base 2) fractions. Most decimal fractions cannot be represented exactly as binary fractions. Example: `0.2 + 0.1 = 0.30000000000000004`
+  - Sometimes you also lose precision: `99999999999.0123 + 0.00231432423 = 99999999999.01462`
+  
+  See more at:
+  - https://hackernoon.com/understanding-the-problem-javascript-maths-2119d85dad2a
+  - https://www.doc.ic.ac.uk/~eedwards/compsys/float/
+  - https://medium.com/coderscorner/floating-point-representation-63114653c9ee
+  - https://www.avioconsulting.com/blog/overcoming-javascript-numeric-precision-issues
+  
 </details>
 <details>
   <summary>Explain <code>map</code> and <code>reduce</code>.</summary>
