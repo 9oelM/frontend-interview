@@ -779,14 +779,34 @@
   
   Eh. Both-ish. [This is what Stanford javascript course says](https://web.stanford.edu/class/cs98si/slides/overview.html): **JavaScript is an interpreted language, not a compiled language.** 
   - C++ or Java need to be compiled before it is run. Compiler translates the code into bytecode that the machine understands and can execute. 
-  - Javascript has no compilation step. The interpreter in the browser reads the code, interprets each line, and runs it. **More modern browsers use a technology known as Just-In-Time (JIT) compilation, which compiles JavaScript to executable bytecode just as it is about to run.**
+  - Javascript has no compilation step. The interpreter in the browser reads the code, interprets each line, and runs it. **More modern browser javascript runtimes (including V8) use a technology known as Just-In-Time (JIT) compilation, which compiles JavaScript to executable bytecode just as it is about to run.**
   
-  ### 
+  ### The javascript runtime on browser
+ 
+  ![javascript engine](./javascript-engine-1.png)
+  
+  The javascript runtime largely consists of: 
+  1. The javascript engine
+    - Memory heap: memory allocation happens here
+    - Call stack: stack frames (each entry in the call stack, probably a function) are executed here.
+  2. Web APIs provided by the browser
+    - DOM
+    - Basic methods like `setTimeout`
+  3. Callback queue
+    - Methods like `onClick`, `onLoad`, ...
+  4. Event loop
+  
+  #### The call stack
+  - Javascript has one thread, and thus one call stack. It can do only one thing at a time.
+  - What happens when a function call in a call stack takes a lot of time to be processed?: 1. the browser can’t do anything else — it’s getting blocked. **It does not render/run other codes**. 2. It may stop being responsive, asking you if you want to wait or leave. So how do we get around with this? **Asynchronous callbacks.**
+  - Asynchronous callbacks. The Event Loop has just one job for now: it should check whether the Call Stack is empty. If there is some function into the Callback Queue and if the Call Stack is free, then it’s time to push the callback into the Call Stack. 
   
   See more at:
   - https://www.valentinog.com/blog/engines/
   - https://codeburst.io/js-essentials-the-javascript-engine-302ff38e8465
   - https://kb.iu.edu/d/agsz
+  - https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf (pictures source)
+  - https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e
 
 </details>
 <details>
