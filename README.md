@@ -889,18 +889,53 @@
   - Floating-point numbers are represented as binary (base 2) fractions. Most decimal fractions cannot be represented exactly as binary fractions. Example: `0.2 + 0.1 = 0.30000000000000004`
   - Sometimes you also lose precision: `99999999999.0123 + 0.00231432423 = 99999999999.01462`
   
+  ### The solution
+  - Use `Number.EPSILON`, the difference between 1 and the smallest floating point number greater than 1.
+  
+  ```js
+  0.2+0.1-0.3 // this is actually 5.551115123125783e-17
+  equal = (Math.abs(0.2+0.1-0.3) < Number.EPSILON) // is 5.551115123125783e-17 negligible (caused by the nature of floating point numbers)
+  equal // true
+  ```
   See more at:
   - https://hackernoon.com/understanding-the-problem-javascript-maths-2119d85dad2a
   - https://www.doc.ic.ac.uk/~eedwards/compsys/float/
   - https://medium.com/coderscorner/floating-point-representation-63114653c9ee
   - https://www.avioconsulting.com/blog/overcoming-javascript-numeric-precision-issues
+  - https://medium.com/@sarafecadu/64-bit-floating-point-a-javascript-story-fa6aad266665
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/EPSILON
   
 </details>
 <details>
   <summary>Explain <code>map</code> and <code>reduce</code>.</summary>
+
+  `map`: maps array elements to something else through a function.
+  ```js
+  [...Array(10)].map((elem, index, array) => index) // 0 1 2 3 4 5 6 7 8 9   
+  ```
+  
+  `reduce`: reduces array elements to a single value.
+  ```
+  const initialValue = 15
+  [...Array(10)]
+  	.map((elem, index, array) => index)
+	.reduce((accumulator, currentValue, currentIndex, array) => {
+		const calc = accumulator + currentValue
+		console.log(calc) // 15 16 18 21 25 30 36 43 51 60
+  		return accumulator + currentValue 
+  	}, initialValue)
+  ```
+  
+  See more at:
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+  
 </details>
 <details>
 <summary>Explain the use of javascript profiler.</summary>
+	
+  See more at:
+  - https://developers.google.com/web/tools/chrome-devtools/rendering-tools/
+	
 </details>
 
 ## React
