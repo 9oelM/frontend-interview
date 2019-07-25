@@ -1078,27 +1078,24 @@ See more at:
 
 ### HTTP/2
 
-### Goal of HTTP/2
+### SPDY and HTTP/2
 
-- **reduce latency** by enabling full request, response multiplexing
-- **minimize protocol overhead** via efficient compression of HTTP header fields
-- add support for request prioritization and server push
+- Google started to develop **SPDY** in 2009 to address performance issues of HTTP/1.1 and **brought a good result** after a while 
+- HTTP-WG(Working group) started working on HTTP/2 based on SPDY, and was accepted as a de facto global standard for web in 2015, surpassing SPDY which is now obsolete. 
 
 ### HTTP/2 vs HTTP/1.x
 
 - **HTTP/2 does not modify the application semantics of HTTP** in any way. All the core concepts, such as HTTP methods, status codes, URIs, and header fields, remain in place. 
 - Instead, **HTTP/2 modifies how the data is formatted** (framed) and **transported** between the client and server
 
-### SPDY and HTTP/2
+### HTTP/1.x vs HTTP/2
 
-- Google started to develop **SPDY** in 2009 to address performance issues of HTTP/1.1 and **brought a good result** after a while 
-- HTTP-WG(Working group) started working on HTTP/2 based on SPDY, and was accepted as a de facto global standard for web in 2015, surpassing SPDY which is now obsolete. 
-
-### Performance problems in HTTP/1.x solved in HTTP/2
-
-- clients **need to use multiple connections** to achieve concurrency and reduce latency; 
-- **does not compress request and response headers**, causing unnecessary network traffic; 
-- **does not allow effective resource prioritization**, resulting in poor use of the underlying TCP connection;
+| - | 1.x | 2.0 |
+|--------------------|----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Stream | 1 connection per 1 stream | 1+ connections per 1 stream (response multiplexing). This greatly reduces latency. |
+| Stream priority | X | Can set a priority for each stream.  A browser may put a higher priority on the stream that requests a more important resource. May be useful when connection is unstable. |
+| Header compression | X. Hundreds of requests may be sent to see a website. Uncompressed headers worsen latency and bandwidth. | Can compress headers according to HPACK specs. Latency reduced.  |
+| Server push | X.  | Server may send multiple resources in a response to a single request.  For example, a server may in advance push stylesheets, images, javascript files to which an HTML document has links to when it receives a request for that single HTML document. |
 
 See more at: 
 
