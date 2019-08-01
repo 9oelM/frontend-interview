@@ -939,6 +939,156 @@
 </details>
 
 ## React
+<details>
+  <summary>Explain main features of React.</summary>
+  
+  - Uses **VirtualDOM**. 
+    - In React, you have VirtualDOM and DOM. For every DOM object, there is a corresponding “virtual DOM object, like a lightweight copy. Manipulating the DOM is slow. Manipulating the virtual DOM is much faster, because nothing gets drawn onscreen. **Think of manipulating the virtual DOM as editing a blueprint, as opposed to moving rooms in an actual house.**
+    - The entire virtual DOM gets updated on `render`.
+    - The virtual DOM gets compared to the snapshot taken right before the update. React figures out which objects have changed.
+    - Only the changed objects get updated on the real DOM.
+    - Changes on the real DOM cause the screen to change.
+  - Supports **server-side rendering**
+    - SSR is the ability of a JavaScript application to **render on the server** rather than in the browser. (Means for every single webpage the user would need to request a whole new HTML file from the server. In essence, you would not need `bundle.js` to render components because they already are rendered)
+    - it allows your site to have a **faster first page load time**, which is the key to a good user experience
+    - **Better for SEO**: search engines cannot efficiently & correctly index applications that exclusively render client-side although Google limitedly can. 
+  - Follows Unidirectional data flow or data binding.
+    - Data has only one way to be transferred to other parts of the application.
+    ![Unidirectional data flow](./unidirectional-data-flow.png)
+    - Any data that’s affected by this state can only **affect Components below it: its children.**
+    - Changing state on a Component will never affect its parent, or its siblings, or any other Component in the application: just its children.
+    ![Unidirectional data flow](./unidirectional-data-flow-2.gif)
+    - You can know where the state change initiated, but you have to start from the root component to notify other components of the state change (redux takes a different approach. See Redux section for more)
+    - The parent component(s) will have a container for the state of your app (typically an immutable variable called state, unless you are using Redux or Flux, in which case you would encapsulate your app’s state in a store). **The parent component typically passes down a snapshot of its state to its child components via read-only props and then the child components can communicate with the parent to update the state via callbacks** which are bound to a button or form in the child component.
+  - Uses reusable/composable UI components to develop the view.
+  
+  See more at:
+  - https://reactjs.org/docs/faq-internals.html
+  - https://www.codecademy.com/articles/react-virtual-dom
+  - https://flaviocopes.com/react-server-side-rendering/
+  - https://flaviocopes.com/react-unidirectional-data-flow/
+  - https://medium.com/@alialhaddad/https-medium-com-alialhaddad-redux-vs-parent-to-child-2583c8e29509
+  - https://medium.com/@lizdenhup/understanding-unidirectional-data-flow-in-react-3e3524c09d8e
+  
+</details>
+<details>
+  <summary>Explain main features of React.</summary>
+  - Uses VirtualDOM
+  - Supports server-side rendering
+  - Follows Unidirectional data flow or data binding.
+  - Uses reusable/composable UI components to develop the view.
+</details>
+<details>
+  <summary>Explain JSX.</summary>
+
+  Javascript XML. XML-like syntax extension for javascript. It is a syntactic sugar for `React.createElement()`. 
+
+</details>
+<details>
+  <summary>What is <code>React.PureComponent</code>? How can you use it in a code and why would you?</summary>
+
+  ### What is it
+  It is exactly the same as `React.Component` except it handles `shouldComponentUpdate` instead of you. `PureComponent` will do a shallow comparison on both props and state on a prop/state change.
+
+  Its `shouldComponentUpdate` method looks like this:
+
+  ```js
+  return (
+    !shallowEqual(oldProps, newProps) ||
+    !shallowEqual(oldState, newState)
+  );
+  ```
+
+  This means:
+  > If the props and the state hasn’t changed, the component is not re-rendered.
+
+  ### Why would you use it
+  - Both functional-based and class-based components have the same downside: **they always re-render when their parent component re-renders even if the props don’t change.**
+  - Also, class-based components always **re-render when its state is updated (this.setState is called) even if the new state is equal to the old state.**
+  - Moreover, **when a parent component re-renders, all of its children are also re-rendered**, and their children too, and so on.
+
+  ### How can you use it
+  You use it with a `class`.
+
+  ```js
+  class ImPure extends PureComponent {
+    render(){
+      <h1>hi</h1>
+    }
+  }
+  ```
+
+  See more at:
+  - https://ozmoroz.com/2018/09/what-is-purecomponent/
+
+</details>
+<details>
+<summary>Why should you bind methods in React class component and how can you do it?</summary>
+
+
+</details>
+<details>
+<summary>Why would you use <code>ref</code> and how can you do it?</summary>
+
+
+</details>
+<details>
+<summary>Explain phases of a component lifecycle.</summary>
+
+
+</details>
+<details>
+<summary>Explain React hooks, and why and how you would use one.</summary>
+
+</details>
+<details>
+<summary>What is Context in React?</summary>
+
+</details>
+<details>
+<summary>What is the purpose of <code>super</code> in React <code>class</code> component's constructor?</summary>
+
+</details>
+<details>
+<summary>Explain how you could lazy import.</summary>
+
+</details>
+<details>
+<summary>What is a portal in React?</summary>
+
+</details>
+<details>
+<summary>How can you catch errors in React?</summary>
+
+</details>
+<details>
+<summary>What is <code>dangerouslySetInnerHTML</code> in React?</summary>
+
+</details>
+<details>
+<summary>What is <code>dangerouslySetInnerHTML</code> in React?</summary>
+
+</details>
+<details>
+<summary>Why do we need to use a function in <code>setState</code>?</summary>
+
+Because `setState` is asynchronous. The state may not change immediately after setState() is called. That means you should not rely on the current state when calling setState() since you can't be sure what that state will be. The solution is to pass a function to setState(), with the previous state as an argument. 
+
+```js
+// assuming this.state.count === 0
+this.setState({ count: this.state.count + 1 })
+this.setState({ count: this.state.count + 1 })
+this.setState({ count: this.state.count + 1 })
+// this.state.count === 1, not 3
+```
+
+```js
+this.setState((prevState, props) => ({
+  count: prevState.count + props.increment
+}))
+// this.state.count === 3 as expected
+```
+</details>
 
 ## Redux
 
@@ -947,7 +1097,29 @@
   <summary>Explain web page redirection methods.</summary>
 </details>
 <details>
-  <summary>Explain Unicode, UTF-8, and base64</summary>
+  <summary>Explain ASCII, Unicode, UTF-8, and base64</summary>
+  
+| - | ASCII | UTF-8 | UTF-16 | base64 |
+|--|--|--|--|--|
+| bit/bytess used | 7 bits (later 8 bits) | 1~6 bytes as the code point increases. UTF-8 is named with 8 because it uses at least 8 bits (or 1 byte) to store the unicode code-points. | Mostly uses 16 bits (or 2 bytes) to encode every character and 32 bits for unusual ones.  | 6 bits |
+| used for | Representing numbers from 0-9, the upper and lower case English letters from A to Z, and some special characters. | Representing every character in every imaginable language systems + numbers + special characters | Mostly the same with UTF-8 | Encoding binary data in ASCII text. Say you want to transfer binary data over a medium. Some media are made for transferring text only, so you cannot transfer bits--you need to encode them because you don't know what is going to happen if you put in bits in there (ex. the medium may interpret your message as a special character). So you convert them into ASCII text first to send. |
+| backwards compatible with ASCII (superset of ASCII?) | - | O | X | base64 IS made of ASCII. |
+
+  ![utf-x-table](./utf-x-table.png)
+
+  ### Unicode
+  - Is not a set of characters. It's just an abstract concept.
+  - An attempt to create a single character set that could represent every characters in every imaginable language systems
+  - Assigns each character with a unique number (aka code point)
+
+  See more at:
+  - https://stackoverflow.com/questions/643694/what-is-the-difference-between-utf-8-and-unicode
+  - https://en.wikipedia.org/wiki/ASCII
+  - https://medium.com/@apiltamang/unicode-utf-8-and-ascii-encodings-made-easy-5bfbe3a1c45a
+  - https://en.wikipedia.org/wiki/Comparison_of_Unicode_encodings
+  - https://stackoverflow.com/questions/130438/do-utf-8-utf-16-and-utf-32-differ-in-the-number-of-characters-they-can-store
+  - https://stackoverflow.com/questions/201479/what-is-base-64-encoding-used-for
+
 </details>
 <details>
 <summary>Explain the usage of CDN.</summary>
@@ -961,9 +1133,108 @@
 <details>
   <summary>Explain pros and cons of typescript</summary>
 
+  ### Cons 
+  Seriously I've researched on Google for a while about downsides of typescript but they were all trying to make something up, like the things that you are already aware of and that we don't really care about... (like 'additional build step required' (yeah I know, of course...) or 'learning curve'...) What the heck. See the image below for reference. 
+
+  ![cons of typescript](./cons-of-typescript.png)
+
+  If you can use typescript, do so. There's no way it's going to give a bad effect on your project. 
+
+  ### Pros
+  
+  Pros? Everything. Explain everything that the language offers to you. Compare it with javascript. 
+
 </details>
 <details>
   <summary>Explain why front end is going functional</summary>
+
+  
+</details>
+<details>
+  <summary>Explain AMP</summary>
+
+  
+</details>
+<details>
+  <summary>Explain WebWoker</summary>
+
+  
+</details>
+<details>
+  <summary>Explain IndexedDB</summary>
+
+  
+</details>
+<details>
+  <summary>Explain PWA</summary>
+
+  
+</details>
+<details>
+  <summary>Explain WebAssembly</summary>
+
+  ### Basics
+  - WebAssembly is NOT C++.
+  - Web stack based virtual machine. It is a processor that does not actually exist, but it helps compile real complex architectures.
+  - When you write code in whatever language, compile it to WebAssembly (through what is called emscripten), then code compiles to the instruction set of the target machine(x86, ARM, ...) in `wasm` format. 
+  - Virtual machine is designed to compile to real processors. So it can run on any runtimes. You are running the code on the bare metal (securely).
+  - Even AutoCAD now can runs on browser! Unity too. The browser has an ability to run all this. UI Toolkit QT also supports WebAssembly. 
+
+  ### How did they do that?
+  - **emscripten**. It's a drop-in replacement for the C/C++ compilers. Instead compiling to machine code, it gives you WebAssembly. **Whatever code you wrote to run on a system should magically happen to run on the web too.** emscripten does a LOT. Origianlly it was the compiler of `asm.js` (another project that would compile C code into javascript to run programs faster). emscripten even pretends to use OpenGL by using WebGL and real file system by using virual things. You can run the code that was never made for the web!
+  - When WebAssembly came out, **emscripten just added a new output format but kept all the work for the emulation.** It was an accidental match with WebAssembly. It was so fit. There was no problem. Perhaps that's why C++ is so tightly involved with WebAssembly.
+
+  ### Ecosystems
+  - Not for every topic, javascript ecosystem is big, while other languages' may be. 
+  - So you choose to either make yourself a javascript port if you don't find one in javscript, or resort to using other languages. 
+  - "Sqoosh". An image compression app written in javascript only. No server. Developers found that the ecosystem for image codecs and encoders was not so big in javascript, so they looked at C/C++. So? WebAssembly. They found some module in C++ and replaced it with the browser's encoder. Improvements were gained. 
+  - So now, ecosystems are not limited to a language anymore, with WebAssembly. **You can now take something that was not used for the web to use it for the web, through emscripten and WASM.**
+
+  ### How do you convert C code to Javascript? How do you configure it?
+  1. Compiling the library
+  2. Define functions that you want to use in javascript (bridge functions)
+  3. Run `emcc` (emscripten C compiler)
+  4. Then you get `.cpp`, `.js`, and `wasm`. 
+  Note, because emscripten does a lot of job under the hood, always check the file size. 
+
+  ### Takeaway 1
+  **If you have a gap in the web platform (javascript) that has been already filled many times in another language, WASM might be your tool!**
+
+  ### Performance
+  - Javascript & WASM are both equally fast as of now.
+  - But it is easier for you to configure WASM to be faster (because it knows what to do, but you writing a javascript code may not know how you could optimize your code)
+  - WASM is looking into things like multiple threads and simd -- things javascript will never get access to. Then we can expect it to outperform javascript. 
+
+  ### Compilation of javascript vs WASM on web
+  JS: JS file => Ignition (V8 intepretor) => TurboFan(optimizing compiler to generate machine code)
+  WASM: WASM file => Liftoff (WASM compiler) => TurboFan(optimizing code)
+  ![js and wasm on v8](./js-and-wasm-on-v8.png)
+  See the difference? 
+  1. Ignition is an **interpretor**, and WASM is a **compiler (generates machine code)**. On average, machine code would be faster. 
+  2. But one more thing: the machine code may have to fall back to interpretor (called de-optimization) because not always the machine code is right, for it is making certain assumptions. But it's not the case for WASM (much faster, never de-opted). 
+  3. It delievers faster and more **predictable** performance. This is important because sometimes javscript works at very different rates in different browsers!
+
+  ### AssemblyScript?
+  - AssemblyScript is a Typescript to WASM compiler. You cannot just throw in the code into WASM because for ex, it does not have a DOM API.
+  - It uses a perfect Typescript syntax with a different type library! You don't have to learn a new language to write WASM. 
+  - For now, WASM does not have a built-in GC algo. You have to free the memory yourself. 
+  
+  ### Things to note
+  - Putting everything into WASM is not a good idea for now
+  - JS vs WASM are not opponents. They have things to complement eachother. Find the place where WASM fits in right!
+
+  ### Future of WASM
+  These are current proposals.
+  1. Threads for parallel computation. Why? Many existing libraries in C/C++ work in multi-threads. Performance generally scales with multi-threads. Match on the web? There's Web Worker on the web! Currently stable. It has to formalize things a bit. Threads are shipped in Chrome 74 by default! 
+  2. Reference types. WASM can pass around arbitrary JS codes using the 'any' ref value type. WASM may run fundamental JS codes with this. 
+  3. WebIDL Binding proposal. It is used to define interfaces that are implemented on the web. 
+  4. GC, Exception handling, ....
+
+  See more at:
+  - https://www.youtube.com/watch?v=njt-Qzw0mVY
+  - https://webassembly.org/
+  - https://emscripten.org/
+
 </details>
 
 ## Network
