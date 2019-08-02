@@ -1714,3 +1714,10 @@ See more at:
 <details>
 <summary>Explain MV* patterns.</summary>
 </details>
+<details>
+<summary>Explain RDBMS vs DBMS.</summary>
+
+See more at: 
+- https://stackoverflow.com/questions/18419137/what-is-the-difference-between-dbms-and-rdbms
+
+</details>
