@@ -477,7 +477,7 @@ Legend:
   
 </details>
 <details>
-  <summary>Explain the order of execution between type conversion and calculation. e.g. what is the answer of <code>3+2+"7"</code> and <code>3+"7"+2</code> and <code>"7"+3+2</code>?</summary>
+  <summary>✅ Explain the order of execution between type conversion and calculation. e.g. what is the answer of <code>3+2+"7"</code> and <code>3+"7"+2</code> and <code>"7"+3+2</code>?</summary>
   
   `3+2+"7"`: "57"
   ```js
@@ -757,7 +757,7 @@ Legend:
 
 </details>
 <details>
-  <summary>Explain the difference between jsonp vs ajax.</summary>
+  <summary>✅ Explain the difference between jsonp vs ajax.</summary>
   
   ### The problem
   When requesting a resource from another domain that is not under our control from a web application, we may be presented with a message Failed to load resource: `Origin * is not allowed by Access-Control-Allow-Origin..` This means that the browser is blocking our request to access a given resource - the resource being an API endpoint.
@@ -1388,7 +1388,57 @@ this.setState((prevState, props) => ({
 
 ## Network
 <details>
-  <summary>🚧 What is REST?</summary>
+  <summary>✅ Explain the significance and details of REST</summary>
+  
+  REST = Representational State Transfer. Concept first developed by Roy Fielding.
+  He speaks of 6 guiding constraints for an interface to be called RESTful.
+  
+  ### Why is it even important?
+  
+  ### What is representation?
+  
+  ### 1. Client-server
+  - Client & Server must be able to evolve separately without depending on each other. 
+  - Everything the client needs to know about is the resource URI. 
+  
+  ### 2. Stateless
+  - Request from client to server contains all information necessary to understand the request. 
+  - Each request is independent of one another. 
+  - Session state is kept entirely on the client. 
+  
+  ### 3. Cacheable
+  - Data inside a response have to be either cacheable/non-cacheable. 
+  - Cacheable means the client can use the data again for later requests.
+  
+  ### 4. Uniform interface
+  - **Identification of resources:** you use URI standard to identify a resource (web page). This just means the **request needs to include a resource identifier**.
+  - **Manipulation of resources through these representations**:
+  	- The response the server returns include enough information so the client can modify the resource
+	- This means you don't need to a client does not need to run a SQL query against the server's database table.
+	- You just need to run an HTTP GET to retrieve a piece of information (for example, get an user id). This info can be again used to delete/update/... the information.
+  - **Self-descriptive messages**: 
+  	- Request to API contains all information the server needs
+	- Response from the server contains all information the client needs
+  - **Hypermedia as the engine of the application state(HATEOAS)**: 
+  	- The server can inform the client of the ways to change the state of the web application. 
+	- If the client asked for a specific user, the server can provide not only the state of that user **but also information about how to change the state of the user, for example how to update the user’s name or how to delete the user.** 
+	- Ex. Server returning a response in HTML format to a browser (which is the client). It will include tags with links (hypermedia part) to another web page where the user can be updated (for example a link to a ‘profile settings’ page).
+ 
+  ### 5. Layered system
+  - Client should only know the immediate layer it is communicating with, and that will be enough. 
+  - The server may have: security/caching/load-balancing/... layers. These should not affect the request/response. The client is agnostic about the existence of these additional layers.
+  
+  ### 6. Code-on-demand (optional)
+  
+  See more at: 
+  - https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html (Korean)
+  - https://midnightcow.tistory.com/102 (Korean)
+  - https://restfulapi.net/
+  - https://stackoverflow.com/questions/25172600/rest-what-exactly-is-meant-by-uniform-interface
+  - https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582
+  - https://restful.io/objects-at-rest-part-1-what-is-it-3e26f0978616
+  - https://www.kennethlange.com/what-are-restful-web-services/
+  
 </details>
 <details>
   <summary>✅ Explain OSI layers.</summary>
