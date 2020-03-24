@@ -1,10 +1,15 @@
 
 # frontend-interview
 
+Legend:
+- ✅: complete
+- 🏃🏻‍♂️: still need more work
+- 🚧: have not started yet
+
 ## Javascript
 
 <details>
-  <summary>Explain the difference between <code>new String(1)</code> and <code>String(1)</code>.</summary>
+  <summary>✅ Explain the difference between <code>new String(1)</code> and <code>String(1)</code>.</summary> 
   
   - `new String(1)` creates a string object. `typeof new String(1) === 'object'`
   
@@ -48,7 +53,7 @@
 </details>
 
 <details>
-  <summary>Explain the difference between <code>const person = Person()</code> vs <code>const person = new Person()</code> provided <code>function Person(){...}</code></summary>
+  <summary>✅ Explain the difference between <code>const person = Person()</code> vs <code>const person = new Person()</code> provided <code>function Person(){...}</code></summary>
   
   ```js
   const person = Person()
@@ -66,7 +71,7 @@
 
 </details>
 <details>
-  <summary>Explain <code>this</code> binding.</summary>
+  <summary>✅ Explain <code>this</code> binding.</summary>
   
   To brief it, **`this` keyword refers to the object it belongs to.** But it's more complicated than that.
 
@@ -176,7 +181,7 @@
 
 </details>
 <details>
-  <summary>Explain the difference between <code>call</code> and <code>apply</code>.</summary>
+  <summary>✅ Explain the difference between <code>call</code> and <code>apply</code>.</summary>
   
   Both `call` and `apply` are used to call a function with a given `this` value and arguments provided.
 
@@ -204,7 +209,7 @@
 
 </details>
 <details>
-  <summary>Explain how to use <code>async</code>, <code>await</code> and <code>Promise</code> and why they are good (and better than callbacks).</summary>
+  <summary>✅ Explain how to use <code>async</code>, <code>await</code> and <code>Promise</code> and why they are good (and better than callbacks).</summary>
   
   ### Promise
   - it is **a proxy for a value not necessarily known when the promise is created.** 
@@ -277,9 +282,163 @@
     }
     ```
 
+  - This also means that:
+
+    ```js
+    async function test() {
+      console.log(1)
+      console.log(await someAsyncJob())
+      console.log(2)
+    }
+    ```
+
+    This code will give you something like
+
+    ```js
+    1
+    [result from someAsyncJob()]
+    2
+    ```
+
+    because we **pause** the execution of the function.
+
+    This code:
+
+    ```js
+    console.log('a')
+    test();
+    console.log('b')
+    ```
+    
+    will output:
+
+    ```
+    a
+    1
+    b
+    [result from someAsyncJob()]
+    2
+    ```
+
+    because we are not `await`ing the promise returned by `test()`. To wait at the outer level, you could do (actually in the newst spec, you don't have to write top level async, but just for the sake of fundamentals, I'm just gonna write it like this):
+
+    ```js
+    (async () => {
+      console.log('a')
+      await test();
+      console.log('b')
+    })();
+    ```
+
+    Then it is going to give you:
+
+    ```
+    a
+    1
+    [result from someAsyncJob()]
+    2
+    b
+    ```
+
+    because you stop in the middle by using `await`.
+
+    Then another question: javascript is single-threaded. Then how could you even pause and run another thing like `console.log`? That's going to be answered in the next question.
+
 </details>
 <details>
-  <summary>Explain the difference between undeclared vs <code>undefined</code> vs <code>null</code> and how to check for each of them in code.</summary>
+  <summary>✅ Explain how <code>await</code> can pause the execution of a function and still run other tasks although it is single-threaded</summary>
+
+  So, we talked about this in the above question:
+
+  ```js
+  async function a(){
+    console.log(1)
+    console.log(await fetch('https://baconipsum.com/api/?type=meat-and-filler'))
+    console.log(2)
+  }
+
+  console.log(0)
+  a();
+  console.log(4)
+  ```
+
+  the output is, of course,
+
+  ```
+  0
+  1
+  4
+  [whatever the result is from fetch]
+  2
+  ```
+
+  Then ok. Javascript is single threaded. So how can you wait on another function and still execute statements in the outer scope?
+
+  **job queue** does the work. In other words, **event loop** (named in the browser likewise).
+
+  what....? ok. let me explain. Javascript implements **run-to-completion model**. This just means: **Each message is processed completely before any other message is processed.**. 
+
+  A simplified model of javascript runtime looks like this ([from MDN docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)):
+
+  ![js runtime](./js-runtime.png)
+
+  - A queue (job queue) is a list of messages to be processed.
+  - Each message associates with a function to be called.
+  - the runtime will handle messages from the oldest one by taking the message out of the queue and calling it.
+  - the runtime will do it until the stack is empty. Then it will process the next message in the queue again.
+
+  So.. 
+
+  ```js
+  async function a(){
+    console.log(1)
+    console.log(await fetch('https://baconipsum.com/api/?type=meat-and-filler'))
+    console.log(2)
+  }
+
+  ~ other codes ~
+  a();
+  ~ other codes ~
+  console.log('other codes');
+  ```
+
+  In this code,
+  1. the main thread runs `console.log(0)`
+  2. the main thread finds that `await fetch('https://baconipsum.com/api/?type=meat-and-filler')` is an async operation, so it adds this callback to the job queue (instead of adding it to the end of the call stack)
+  3. the browser will run `~ other codes ~` below `a()` because they are synchronous.
+  4. once `fetch` gets the result back, the async callback in the job queue gets into the call stack (by callback, don't be confused. maybe think of this way: `fetch('https://baconipsum.com/api/?type=meat-and-filler').then((a) => callback(a))`), which actually in this case is just `console.log`. And this gets executed.
+  5. `console.log(2)` goes into the main stack and gets executed by the event loop
+
+  One more thing to remember:
+  - Promises get higher priority than callback queues. In other words, setTimeout executes lather than a promise.
+
+  Sources
+  - https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff
+  - https://flaviocopes.com/javascript-event-loop/
+  - https://hashnode.com/post/task-queue-and-job-queue-deep-dive-into-javascript-event-loop-model-cjui19qqa005wdgs1742fa4wz
+  - https://medium.com/@chaudharypulkit93/how-does-nodejs-work-beginner-to-advanced-event-loop-v8-engine-libuv-threadpool-bbe9b41b5bdd
+  - https://itnext.io/javascript-promises-and-async-await-as-fast-as-possible-d7c8c8ff0abc
+  - https://stackoverflow.com/questions/51007636/how-javascript-single-threaded-and-asynchronous
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Event_loop
+
+  Note: this is a very confusing topic and lots of people say different terms for the same things and so on. It is VERY confusing. Study this hard.
+
+</details>
+<details>
+  <summary>✅ Are event loop and job queue the same thing?</summary>
+
+  - Event loop: [According to MDN docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Event_loop): event loop waits for a new message to arrive and processes the next message. In other words, it runs continuously and checks if the main stack has any frames left to execute. If not, it looks at the callback queue to see if it has any callbacks to execute too.
+  - Callback queue (sometimes called event loop queue): async callbacks other than promises (ex. `setTimeout`)
+  - Job queue: for all async callbacks using promises
+
+  So.. no. They are not the same things.
+</details>
+<details>
+  <summary>🚧 Is it valid to say that javascript is single-threaded?</summary>
+
+</details>
+<details>
+  <summary>✅ Explain the difference between undeclared vs <code>undefined</code> vs <code>null</code> and how to check for each of them in code.</summary>
   
   ### Undeclared
   Undeclared variables: 
@@ -299,7 +458,7 @@
 
 </details>
 <details>
-  <summary>Explain the difference between <code>==</code> and <code>===</code>.</summary>
+  <summary>✅ Explain the difference between <code>==</code> and <code>===</code>.</summary>
   
   - `==` operator compares two sides **with type conversion** if needed.
   - `===` operator compares two sides **without type conversion (strongly recommneded)**.
@@ -345,7 +504,7 @@
 </details>
 
 <details>
-  <summary>Explain how you could deal with a <code>var</code> variable in a for loop to have it reset every loop: e.g. <code>for(var i = 0; i < 10; i++){ setTimeout( ()=>console.log(i), i*1000 ) }</code></summary>
+  <summary>✅ Explain how you could deal with a <code>var</code> variable in a for loop to have it reset every loop: e.g. <code>for(var i = 0; i < 10; i++){ setTimeout( ()=>console.log(i), i*1000 ) }</code></summary>
 
   ### What is the problem?
   The problem is that there is **only one variable created in the scope of `for` loop**. Then the `i` inserted inside the callback of `setTimeout` is **only from one variable.** At the end of the loop, `i` would be come `10`, and then `console.log(i)` would naively output ten lines of of `10`.
@@ -519,7 +678,7 @@
 </details>
 
 <details>
-  <summary>How does prototypal inheritance work?</summary>
+  <summary>✅ How does prototypal inheritance work?</summary>
   
   - All JavaScript objects have a prototype property, that is a reference to another object. When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's prototype, and the prototype's prototype and so on, until it finds the property defined on one of the prototypes or until it reaches the end of the prototype chain. This mimics inheritance in other languages.
   - The top-end of every normal `[[Prototype]]` chain is the built-in Object.prototype. This object includes a variety of common utilities used all over JS:
@@ -548,7 +707,7 @@
 
 </details>
 <details>
-  <summary>Explain the difference among <code>forEach</code> vs <code>for ... in </code> vs <code>for ... of </code>vs <code>map</code>.</summary>
+  <summary>✅ Explain the difference among <code>forEach</code> vs <code>for ... in </code> vs <code>for ... of </code>vs <code>map</code>.</summary>
   
   ### forEach
   `forEach` does NOT return anything from the callback. If you want to, you should use `map`. 
@@ -653,17 +812,18 @@
 
 </details>
 <details>
-  <summary>Explain the difference between <code>'DOMContentLoaded'</code> vs <code>'load'</code></summary>
+  <summary>✅ Explain the difference between <code>'DOMContentLoaded'</code> vs <code>'load'</code></summary>
 
   - The `DOMContentLoaded` event fires when the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading.
   - The `load` event is fired when the whole page has loaded, including all dependent resources such as stylesheets images. 
 
   See more at:
   - https://developer.mozilla.org/en-US/docs/Web/Reference/Events/DOMContentLoaded
+  - https://stackoverflow.com/questions/2414750/difference-between-domcontentloaded-and-load-events
 
 </details>
 <details>
-  <summary>Explain the difference between <code>()=>{}</code> and <code>function(){}</code> in relation to binding.</summary>
+  <summary>✅ Explain the difference between <code>()=>{}</code> and <code>function(){}</code> in relation to binding.</summary>
 
   Before arrow functions, every new function defined its own this value based on how the function was called. But an arrow function does not have its own `this`. The `this` value of the enclosing lexical scope is used; arrow functions follow the normal variable lookup rules. **So while searching for `this` which is not present in current scope, an arrow function ends up finding the `this` from its enclosing scope.** 
 
@@ -736,7 +896,7 @@
 
 </details>
 <details>
-  <summary>Explain the usage of <code>static</code> keyword in <code>class</code></summary>
+  <summary>✅ Explain the usage of <code>static</code> keyword in <code>class</code></summary>
 	
   ```js
   class ClassWithStaticMethod {
@@ -756,7 +916,7 @@
   
 </details>
 <details>
-  <summary>Explain event bubbling and capturing.</summary>
+  <summary>✅ Explain event bubbling and capturing.</summary>
 	
   Event bubbling and capturing(trickling) are two different ways of event propagation in HTML DOM API.
   - bubbling: event captured by the innermost element and propagates to outer elements
@@ -769,7 +929,7 @@
 	
 </details>
 <details>
-  <summary>Explain how javascript works on the browser (memory heap, call stack, event loop, callback queue, gc, web APIs...)</summary>
+  <summary>✅ Explain how javascript works on the browser (memory heap, call stack, event loop, callback queue, gc, web APIs...)</summary>
   
   ### Compiled vs Interpreted?
   #### What is compiled and interpreted anyways
@@ -866,7 +1026,7 @@
 
 </details>
 <details>
-  <summary>Explain the limitation of floating point number system in javascript.</summary>
+  <summary>🏃🏻‍♂️ Explain the limitation of floating point number system in javascript.</summary>
 	
   ### Floating point number
   > In JavaScript **all numbers are IEEE 754 floating point numbers.** Due to the binary nature of their encoding, some decimal numbers cannot be represented with perfect accuracy.
@@ -907,7 +1067,7 @@
   
 </details>
 <details>
-  <summary>Explain <code>map</code> and <code>reduce</code>.</summary>
+  <summary>✅ Explain <code>map</code> and <code>reduce</code>.</summary>
 
   `map`: maps array elements to something else through a function.
   ```js
@@ -915,15 +1075,15 @@
   ```
   
   `reduce`: reduces array elements to a single value.
-  ```
+  ```js
   const initialValue = 15
   [...Array(10)]
   	.map((elem, index, array) => index)
-	.reduce((accumulator, currentValue, currentIndex, array) => {
-		const calc = accumulator + currentValue
-		console.log(calc) // 15 16 18 21 25 30 36 43 51 60
-  		return accumulator + currentValue 
-  	}, initialValue)
+    .reduce((accumulator, currentValue, currentIndex, array) => {
+      const calc = accumulator + currentValue
+      console.log(calc) // 15 16 18 21 25 30 36 43 51 60
+        return accumulator + currentValue 
+      }, initialValue)
   ```
   
   See more at:
@@ -931,7 +1091,7 @@
   
 </details>
 <details>
-<summary>Explain the use of javascript profiler.</summary>
+<summary>🏃🏻‍♂️ Explain the use of javascript profiler.</summary>
 	
   See more at:
   - https://developers.google.com/web/tools/chrome-devtools/rendering-tools/
@@ -940,7 +1100,7 @@
 
 ## React
 <details>
-  <summary>Explain main features of React.</summary>
+  <summary>✅ Explain main features of React.</summary>
   
   - Uses **VirtualDOM**. 
     - In React, you have VirtualDOM and DOM. For every DOM object, there is a corresponding “virtual DOM object, like a lightweight copy. Manipulating the DOM is slow. Manipulating the virtual DOM is much faster, because nothing gets drawn onscreen. **Think of manipulating the virtual DOM as editing a blueprint, as opposed to moving rooms in an actual house.**
@@ -972,20 +1132,13 @@
   
 </details>
 <details>
-  <summary>Explain main features of React.</summary>
-  - Uses VirtualDOM
-  - Supports server-side rendering
-  - Follows Unidirectional data flow or data binding.
-  - Uses reusable/composable UI components to develop the view.
-</details>
-<details>
-  <summary>Explain JSX.</summary>
+  <summary>✅ Explain JSX.</summary>
 
   Javascript XML. XML-like syntax extension for javascript. It is a syntactic sugar for `React.createElement()`. 
 
 </details>
 <details>
-  <summary>What is <code>React.PureComponent</code>? How can you use it in a code and why would you?</summary>
+  <summary>✅ What is <code>React.PureComponent</code>? How can you use it in a code and why would you?</summary>
 
   ### What is it
   It is exactly the same as `React.Component` except it handles `shouldComponentUpdate` instead of you. `PureComponent` will do a shallow comparison on both props and state on a prop/state change.
@@ -1023,54 +1176,50 @@
 
 </details>
 <details>
-<summary>Why should you bind methods in React class component and how can you do it?</summary>
+<summary>🚧 Why should you bind methods in React class component and how can you do it?</summary>
 
 
 </details>
 <details>
-<summary>Why would you use <code>ref</code> and how can you do it?</summary>
+<summary>🚧 Why would you use <code>ref</code> and how can you do it?</summary>
 
 
 </details>
 <details>
-<summary>Explain phases of a component lifecycle.</summary>
+<summary>🚧 Explain phases of a component lifecycle.</summary>
 
 
 </details>
 <details>
-<summary>Explain React hooks, and why and how you would use one.</summary>
+<summary>🚧 Explain React hooks, and why and how you would use one.</summary>
 
 </details>
 <details>
-<summary>What is Context in React?</summary>
+<summary>🚧 What is Context in React?</summary>
 
 </details>
 <details>
-<summary>What is the purpose of <code>super</code> in React <code>class</code> component's constructor?</summary>
+<summary>🚧 What is the purpose of <code>super</code> in React <code>class</code> component's constructor?</summary>
 
 </details>
 <details>
-<summary>Explain how you could lazy import.</summary>
+<summary>🚧 Explain how you could lazy import.</summary>
 
 </details>
 <details>
-<summary>What is a portal in React?</summary>
+<summary>🚧 What is a portal in React?</summary>
 
 </details>
 <details>
-<summary>How can you catch errors in React?</summary>
+<summary>🚧 How can you catch errors in React?</summary>
 
 </details>
 <details>
-<summary>What is <code>dangerouslySetInnerHTML</code> in React?</summary>
+<summary>🚧 What is <code>dangerouslySetInnerHTML</code> in React?</summary>
 
 </details>
 <details>
-<summary>What is <code>dangerouslySetInnerHTML</code> in React?</summary>
-
-</details>
-<details>
-<summary>Why do we need to use a function in <code>setState</code>?</summary>
+<summary>✅ Why do we need to use a function in <code>setState</code>?</summary>
 
 Because `setState` is asynchronous. The state may not change immediately after setState() is called. That means you should not rely on the current state when calling setState() since you can't be sure what that state will be. The solution is to pass a function to setState(), with the previous state as an argument. 
 
@@ -1090,14 +1239,12 @@ this.setState((prevState, props) => ({
 ```
 </details>
 
-## Redux
-
 ## Front-end general 
 <details>
   <summary>Explain web page redirection methods.</summary>
 </details>
 <details>
-  <summary>Explain ASCII, Unicode, UTF-8, and base64</summary>
+  <summary>✅ Explain ASCII, Unicode, UTF-8, and base64</summary>
   
 | - | ASCII | UTF-8 | UTF-16 | base64 |
 |--|--|--|--|--|
@@ -1122,16 +1269,16 @@ this.setState((prevState, props) => ({
 
 </details>
 <details>
-<summary>Explain the usage of CDN.</summary>
+<summary>🚧 Explain the usage of CDN.</summary>
 </details>
 <details>
-  <summary>Explain why reflow happens and how to prevent it</summary>
+  <summary>🚧 Explain why reflow happens and how to prevent it</summary>
 
   See more at:
   - https://gist.github.com/paulirish/5d52fb081b3570c81e3a
 </details>
 <details>
-  <summary>Explain pros and cons of typescript</summary>
+  <summary>✅ Explain pros and cons of typescript</summary>
 
   ### Cons 
   Seriously I've researched on Google for a while about downsides of typescript but they were all trying to make something up, like the things that you are already aware of and that we don't really care about... (like 'additional build step required' (yeah I know, of course...) or 'learning curve'...) What the heck. See the image below for reference. 
@@ -1146,32 +1293,32 @@ this.setState((prevState, props) => ({
 
 </details>
 <details>
-  <summary>Explain why front end is going functional</summary>
+  <summary>🚧 Explain why front end is going functional</summary>
 
   
 </details>
 <details>
-  <summary>Explain AMP</summary>
+  <summary>🚧 Explain AMP</summary>
 
   
 </details>
 <details>
-  <summary>Explain WebWoker</summary>
+  <summary>🚧 Explain WebWorker</summary>
 
   
 </details>
 <details>
-  <summary>Explain IndexedDB</summary>
+  <summary>🚧 Explain IndexedDB</summary>
 
   
 </details>
 <details>
-  <summary>Explain PWA</summary>
+  <summary>🚧 Explain PWA</summary>
 
   
 </details>
 <details>
-  <summary>Explain WebAssembly</summary>
+  <summary>✅ Explain WebAssembly</summary>
 
   ### Basics
   - WebAssembly is NOT C++.
@@ -1234,15 +1381,17 @@ this.setState((prevState, props) => ({
   - https://www.youtube.com/watch?v=njt-Qzw0mVY
   - https://webassembly.org/
   - https://emscripten.org/
+  - https://blog.logrocket.com/webassembly-how-and-why-559b7f96cd71/
+  - https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts
 
 </details>
 
 ## Network
 <details>
-  <summary>What is REST?</summary>
+  <summary>🚧 What is REST?</summary>
 </details>
 <details>
-  <summary>Explain OSI layers.</summary>
+  <summary>✅ Explain OSI layers.</summary>
 
 ### OSI
 
@@ -1345,7 +1494,7 @@ See more at:
 
 </details>
 <details>
-  <summary>Explain HTTP/2 and distinguish it from HTTP/1.x</summary>
+  <summary>✅ Explain HTTP/2 and distinguish it from HTTP/1.x</summary>
 
 ### HTTP/2
 
@@ -1376,7 +1525,7 @@ See more at:
 
 </details>
 <details>
-  <summary>Explain why you should use HTTPS and how it works.</summary>
+  <summary>✅ Explain why you should use HTTPS and how it works.</summary>
 
 ## HTTPS
 
@@ -1408,7 +1557,7 @@ See more at:
 
 </details>
 <details>
-  <summary>Explain symmetric and asymmetric cryptography.</summary>
+  <summary>✅ Explain symmetric and asymmetric cryptography.</summary>
 
 ## Symmetric & Asymmetric cryptography 
 
@@ -1442,7 +1591,7 @@ See more at:
 
 </details>
 <details>
-  <summary>Explain HTTPS handshake (in relation to SSL/TLS)</summary>
+  <summary>✅ Explain HTTPS handshake (in relation to SSL/TLS)</summary>
 
 
 ### The HTTPS (SSL/TLS) handshake
@@ -1484,7 +1633,7 @@ See more at:
 
 
 <details>
-<summary>Explain why SSL/TLS are not safe anymore</summary>
+<summary>✅ Explain why SSL/TLS are not safe anymore</summary>
 
 **IMPORTANT**: as of [**February 2019, TLS v1.3 (state-of-art protocol) is no longer safe.**](https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/february/downgrade-attack-on-tls-1.3-and-vulnerabilities-in-major-tls-libraries/) More easily said: NOTHING IS SAFE. 
 
@@ -1508,12 +1657,12 @@ See more at:
 </details>
 
 <details>
-<summary>Explain different types of wifi network encryptions: WEP, WPA, WPA2, WPA3.</summary>
+<summary>🚧 Explain different types of wifi network encryptions: WEP, WPA, WPA2, WPA3.</summary>
 </details>
 
 ## Computer general
 <details>
-<summary>Explain the difference among PNG vs JPG vs Bitmap vs GIF</summary>
+<summary>✅ Explain the difference among PNG vs JPG vs Bitmap vs GIF</summary>
 
 
 
@@ -1556,7 +1705,7 @@ See more at:
 
 ## Computer organization
 <details>
-<summary>Explain the use of cache.</summary>
+<summary>✅ Explain the use of cache.</summary>
 
 
 ### Cache memory 
@@ -1626,7 +1775,7 @@ See more at: for **Cache in programming**
 </details>
 
 <details>
-<summary>Explain the difference between HDD and SSD.</summary>
+<summary>✅ Explain the difference between HDD and SSD.</summary>
 
 
 |                                  | SSD(Solid State Drive)                                       | HDD(Hard Disk Drive)                                         |
@@ -1650,7 +1799,7 @@ See more at:
 
 
 <details>
-<summary>Explain the difference between DRAM vs SRAM.</summary>
+<summary>✅ Explain the difference between DRAM vs SRAM.</summary>
 
 #### DRAM vs SRAM
 
@@ -1678,7 +1827,7 @@ See more at:
 
 </details>
 <details>
-<summary>Explain the use of virtual memory.</summary>
+<summary>🚧 Explain the use of virtual memory.</summary>
 
 See more at:
 - https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
@@ -1686,7 +1835,7 @@ See more at:
 </details>
 
 
-## Todo 
+## 🚧 Todo 
 <details>
 <summary>Explain the inner structure of apk</summary>
 </details>
