@@ -1092,7 +1092,7 @@ Legend:
 </details>
 <details>
 <summary>🏃🏻‍♂️ Explain the use of javascript profiler.</summary>
-	
+I wrote an entire article on it. Check it out: https://medium.com/swlh/learn-major-functionalities-on-chromes-performance-tab-and-practice-it-with-a-simple-react-project-98e0306aa7
   See more at:
   - https://developers.google.com/web/tools/chrome-devtools/rendering-tools/
 	
