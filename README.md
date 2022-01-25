@@ -1026,7 +1026,7 @@ Legend:
 
 </details>
 <details>
-  <summary>🏃🏻‍♂️ Explain the limitation of floating point number system in javascript.</summary>
+  <summary>✅ Explain the limitation of floating point number system in javascript.</summary>
 	
   ### Floating point number
   > In JavaScript **all numbers are IEEE 754 floating point numbers.** Due to the binary nature of their encoding, some decimal numbers cannot be represented with perfect accuracy.
